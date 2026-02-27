@@ -21,6 +21,7 @@ import 'screens/credit/wallet_screen.dart';
 import 'screens/disputes/disputes_screen.dart';
 import 'screens/quality/quality_check_screen.dart';
 import 'screens/profile/profile_screen.dart';
+import 'screens/urgent/urgent_requests_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -78,6 +79,8 @@ class NanonMeshApp extends StatelessWidget {
               return _slideRoute(const DisputesScreen());
             case '/quality-check':
               return _slideRoute(const QualityCheckScreen());
+            case '/urgent-requests':
+              return _slideRoute(const UrgentRequestsScreen());
             default:
               return _fadeRoute(const SplashScreen());
           }

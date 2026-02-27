@@ -240,46 +240,74 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildQuickActions(BuildContext context) {
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          child: _quickActionCard(
-            context,
-            icon: Icons.add_circle_outline,
-            label: 'New\nListing',
-            color: AppTheme.primaryGreen,
-            onTap: () => Navigator.pushNamed(context, '/create-listing'),
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: _quickActionCard(
+                context,
+                icon: Icons.add_circle_outline,
+                label: 'New\nListing',
+                color: AppTheme.primaryGreen,
+                onTap: () => Navigator.pushNamed(context, '/create-listing'),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _quickActionCard(
+                context,
+                icon: Icons.swap_calls_rounded,
+                label: 'My\nTrades',
+                color: AppTheme.accentAmber,
+                onTap: () => Navigator.pushNamed(context, '/trades'),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _quickActionCard(
+                context,
+                icon: Icons.account_balance_wallet_outlined,
+                label: 'Credit\nWallet',
+                color: AppTheme.skyBlue,
+                onTap: () => Navigator.pushNamed(context, '/wallet'),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _quickActionCard(
-            context,
-            icon: Icons.swap_calls_rounded,
-            label: 'My\nTrades',
-            color: AppTheme.accentAmber,
-            onTap: () => Navigator.pushNamed(context, '/trades'),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _quickActionCard(
-            context,
-            icon: Icons.account_balance_wallet_outlined,
-            label: 'Credit\nWallet',
-            color: AppTheme.skyBlue,
-            onTap: () => Navigator.pushNamed(context, '/wallet'),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _quickActionCard(
-            context,
-            icon: Icons.shield_outlined,
-            label: 'Dispute\nCenter',
-            color: AppTheme.warningOrange,
-            onTap: () => Navigator.pushNamed(context, '/disputes'),
-          ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _quickActionCard(
+                context,
+                icon: Icons.notification_important_rounded,
+                label: 'Urgent\nNeed',
+                color: AppTheme.errorRed,
+                onTap: () => Navigator.pushNamed(context, '/urgent-requests'),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _quickActionCard(
+                context,
+                icon: Icons.camera_alt_rounded,
+                label: 'AI\nQuality',
+                color: AppTheme.primaryGreen,
+                onTap: () => Navigator.pushNamed(context, '/quality-check'),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _quickActionCard(
+                context,
+                icon: Icons.shield_outlined,
+                label: 'Dispute\nCenter',
+                color: AppTheme.warningOrange,
+                onTap: () => Navigator.pushNamed(context, '/disputes'),
+              ),
+            ),
+          ],
         ),
       ],
     );

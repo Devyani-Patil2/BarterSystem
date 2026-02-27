@@ -8,6 +8,7 @@ import '../models/trade_model.dart';
 import '../models/evidence_model.dart';
 import '../models/dispute_model.dart';
 import '../models/credit_transaction_model.dart';
+import '../models/urgent_request_model.dart';
 import '../config/constants.dart';
 
 /// Central application state using ChangeNotifier (Provider pattern).
@@ -27,6 +28,7 @@ class AppState extends ChangeNotifier {
   final List<EvidenceModel> _evidence = [];
   final List<DisputeModel> _disputes = [];
   List<CreditTransactionModel> _transactions = [];
+  final List<UrgentRequestModel> _urgentRequests = [];
 
   // Navigation
   int _currentTabIndex = 0;
@@ -59,6 +61,11 @@ class AppState extends ChangeNotifier {
   List<CreditTransactionModel> get transactions => _transactions;
   List<CreditTransactionModel> get myTransactions =>
       _transactions.where((t) => t.userId == _currentUser?.id).toList();
+  List<UrgentRequestModel> get urgentRequests => _urgentRequests;
+  List<UrgentRequestModel> get openUrgentRequests =>
+      _urgentRequests.where((r) => r.status == 'open').toList();
+  List<UrgentRequestModel> get myUrgentRequests =>
+      _urgentRequests.where((r) => r.requesterId == _currentUser?.id).toList();
 
   final _uuid = const Uuid();
   final _random = Random();
@@ -152,6 +159,7 @@ class AppState extends ChangeNotifier {
     _evidence.clear();
     _disputes.clear();
     _transactions.clear();
+    _urgentRequests.clear();
     notifyListeners();
   }
 
@@ -159,6 +167,135 @@ class AppState extends ChangeNotifier {
 
   void setTabIndex(int index) {
     _currentTabIndex = index;
+    notifyListeners();
+  }
+
+  // ─── URGENT REQUESTS ──────────────────────────────────────
+
+  /// Post an urgent request. The requester is willing to spend credits
+  /// to get something they need right now.
+  void postUrgentRequest({
+    required String productNeeded,
+    required double quantity,
+    required String unit,
+    required double creditCost,
+    String urgencyLevel = 'high',
+    String description = '',
+  }) {
+    if (_currentUser == null) return;
+
+    // Check if requester has enough credits
+    if (_currentUser!.creditBalance < creditCost) return;
+
+    final request = UrgentRequestModel(
+      id: _uuid.v4(),
+      requesterId: _currentUser!.id,
+      requesterName: _currentUser!.name,
+      requesterVillage: _currentUser!.village,
+      productNeeded: productNeeded,
+      quantity: quantity,
+      unit: unit,
+      creditCost: creditCost,
+      urgencyLevel: urgencyLevel,
+      description: description,
+    );
+
+    _urgentRequests.insert(0, request);
+    notifyListeners();
+  }
+
+  /// Fulfill an urgent request. The fulfiller provides the product
+  /// and earns the credits. The requester pays the credits.
+  void fulfillUrgentRequest(String requestId) {
+    if (_currentUser == null) return;
+
+    final index = _urgentRequests.indexWhere((r) => r.id == requestId);
+    if (index == -1) return;
+
+    final request = _urgentRequests[index];
+
+    // Can't fulfill your own request
+    if (request.requesterId == _currentUser!.id) return;
+    // Must be open
+    if (request.status != 'open') return;
+
+    // Find the requester user
+    final requesterIndex = _users.indexWhere((u) => u.id == request.requesterId);
+
+    // Update request status
+    _urgentRequests[index] = request.copyWith(
+      status: 'completed',
+      fulfillerId: _currentUser!.id,
+      fulfillerName: _currentUser!.name,
+      fulfilledAt: DateTime.now(),
+    );
+
+    // Transfer credits: requester pays → fulfiller earns
+    // Debit requester
+    if (requesterIndex != -1) {
+      _users[requesterIndex] = _users[requesterIndex].copyWith(
+        creditBalance: _users[requesterIndex].creditBalance - request.creditCost,
+      );
+    }
+    // If the requester is the current user (viewing someone else's perspective)
+    if (request.requesterId == _currentUser!.id) {
+      _currentUser = _currentUser!.copyWith(
+        creditBalance: _currentUser!.creditBalance - request.creditCost,
+      );
+    }
+
+    // Credit the fulfiller (current user)
+    _currentUser = _currentUser!.copyWith(
+      creditBalance: _currentUser!.creditBalance + request.creditCost,
+      totalTrades: _currentUser!.totalTrades + 1,
+      reputationScore: min(100, _currentUser!.reputationScore + 3.0),
+    );
+
+    // Record transactions
+    _transactions.insert(
+      0,
+      CreditTransactionModel(
+        id: _uuid.v4(),
+        userId: request.requesterId,
+        fromUserId: request.requesterId,
+        toUserId: _currentUser!.id,
+        amount: request.creditCost,
+        type: 'debit',
+        description:
+            'Urgent: Paid for ${request.productNeeded} to ${_currentUser!.name}',
+        balanceAfter: requesterIndex != -1
+            ? _users[requesterIndex].creditBalance
+            : 0,
+        timestamp: DateTime.now(),
+      ),
+    );
+    _transactions.insert(
+      0,
+      CreditTransactionModel(
+        id: _uuid.v4(),
+        userId: _currentUser!.id,
+        fromUserId: request.requesterId,
+        toUserId: _currentUser!.id,
+        amount: request.creditCost,
+        type: 'credit',
+        description:
+            'Urgent: Earned for providing ${request.productNeeded} to ${request.requesterName}',
+        balanceAfter: _currentUser!.creditBalance,
+        timestamp: DateTime.now(),
+      ),
+    );
+
+    notifyListeners();
+  }
+
+  /// Cancel an urgent request (only the requester can cancel)
+  void cancelUrgentRequest(String requestId) {
+    final index = _urgentRequests.indexWhere((r) => r.id == requestId);
+    if (index == -1) return;
+    if (_urgentRequests[index].requesterId != _currentUser?.id) return;
+    if (_urgentRequests[index].status != 'open') return;
+
+    _urgentRequests[index] = _urgentRequests[index].copyWith(status: 'cancelled');
     notifyListeners();
   }
 
@@ -780,6 +917,48 @@ class AppState extends ChangeNotifier {
         timestamp: DateTime.now().subtract(const Duration(days: 3)),
       ),
     ];
+    // Sample urgent requests from other farmers
+    _urgentRequests.addAll([
+      UrgentRequestModel(
+        id: 'urgent_001',
+        requesterId: 'farmer_003',
+        requesterName: 'Suresh Yadav',
+        requesterVillage: 'Krishnapur',
+        productNeeded: 'Tractor Service',
+        quantity: 3,
+        unit: 'hour',
+        creditCost: 150,
+        urgencyLevel: 'high',
+        description: 'Need tractor urgently for ploughing before rain',
+        createdAt: DateTime.now().subtract(const Duration(hours: 2)),
+      ),
+      UrgentRequestModel(
+        id: 'urgent_002',
+        requesterId: 'farmer_004',
+        requesterName: 'Meena Sharma',
+        requesterVillage: 'Laxminagar',
+        productNeeded: 'Seeds',
+        quantity: 10,
+        unit: 'kg',
+        creditCost: 100,
+        urgencyLevel: 'medium',
+        description: 'Need paddy seeds for sowing season starting tomorrow',
+        createdAt: DateTime.now().subtract(const Duration(hours: 5)),
+      ),
+      UrgentRequestModel(
+        id: 'urgent_003',
+        requesterId: 'farmer_001',
+        requesterName: 'Rajesh Kumar',
+        requesterVillage: 'Sundarpur',
+        productNeeded: 'Transport Service',
+        quantity: 1,
+        unit: 'trip',
+        creditCost: 200,
+        urgencyLevel: 'high',
+        description: 'Need truck to transport harvest to mandi today',
+        createdAt: DateTime.now().subtract(const Duration(hours: 1)),
+      ),
+    ]);
 
     // Run matching engine on seed data
     _checkForTradeLoops();
