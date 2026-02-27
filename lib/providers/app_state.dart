@@ -802,6 +802,8 @@ class AppState extends ChangeNotifier {
     if (tradeIndex == -1) return;
 
     final trade = _trades[tradeIndex];
+
+    // Only confirm the calling farmer
     final updatedParticipants = trade.participants.map((p) {
       if (p.farmerId == farmerId) {
         return TradeParticipant(
@@ -819,7 +821,7 @@ class AppState extends ChangeNotifier {
       return p;
     }).toList();
 
-    // Check if all confirmed
+    // Check if ALL participants confirmed
     final allConfirmed = updatedParticipants.every(
       (p) => p.confirmationStatus == 'confirmed',
     );
@@ -989,12 +991,14 @@ class AppState extends ChangeNotifier {
 
   /// Analyze a real crop photo for quality scoring.
   /// Uses pixel-level analysis: brightness, saturation, green ratio,
-  /// brown ratio, uniformity â€” NOT random numbers.
+  /// brown ratio, uniformity — NOT random numbers.
   Future<EvidenceModel> generateQualityScoreFromImage({
     required String tradeId,
     required String farmerId,
     required Uint8List imageBytes,
     String? photoUrl,
+    String role = 'sending',
+    String productName = '',
   }) async {
     // Real image analysis
     final analysis = _qualityAnalysis.analyzeImageBytes(imageBytes);
@@ -1003,6 +1007,8 @@ class AppState extends ChangeNotifier {
       id: _uuid.v4(),
       tradeId: tradeId,
       farmerId: farmerId,
+      role: role,
+      productName: productName,
       photoUrl: photoUrl,
       aiQualityScore: analysis['overall'] as double,
       conditionTag: analysis['conditionTag'] as String,
@@ -1015,34 +1021,53 @@ class AppState extends ChangeNotifier {
     );
 
     _evidence.add(evidence);
-    // Evidence stays in-memory
     notifyListeners();
     return evidence;
   }
 
-  // ─── EVIDENCE UPLOAD (BOTH PARTIES) ──────────────────────────
+  // ─── EVIDENCE UPLOAD (BOTH PARTIES × 2 ROLES) ─────────────────
 
-  /// Get all evidence for a specific trade.
+  /// Get all evidence for a specific trade (from local cache).
   List<EvidenceModel> getEvidenceForTrade(String tradeId) {
     return _evidence.where((e) => e.tradeId == tradeId).toList();
   }
 
-  /// Get evidence uploaded by a specific farmer for a trade.
-  EvidenceModel? getMyEvidence(String tradeId, String farmerId) {
+  /// Get evidence uploaded by a specific farmer for a specific role.
+  EvidenceModel? getMyEvidence(String tradeId, String farmerId, String role) {
     try {
       return _evidence.firstWhere(
-        (e) => e.tradeId == tradeId && e.farmerId == farmerId,
+        (e) => e.tradeId == tradeId && e.farmerId == farmerId && e.role == role,
       );
     } catch (_) {
       return null;
     }
   }
 
-  /// Upload delivery evidence for a trade. Both sender and receiver call this.
-  /// When both have uploaded, auto-compare and either complete or dispute.
+  /// Load evidence from Firestore into local cache for a trade.
+  Future<void> loadEvidenceFromFirestore(String tradeId) async {
+    try {
+      final maps = await _firestore.getEvidenceForTrade(tradeId);
+      for (final map in maps) {
+        final e = EvidenceModel.fromMap(map);
+        // Only add if not already in local cache
+        if (!_evidence.any((existing) => existing.id == e.id)) {
+          _evidence.add(e);
+        }
+      }
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error loading evidence from Firestore: $e');
+    }
+  }
+
+  /// Upload delivery evidence for a trade.
+  /// Each farmer calls this TWICE: once for 'sending', once for 'receiving'.
+  /// When all 4 photos are uploaded, auto-compare per product.
   Future<EvidenceModel> uploadEvidence({
     required String tradeId,
     required String farmerId,
+    required String role, // 'sending' or 'receiving'
+    required String productName,
     required Uint8List imageBytes,
     String? photoUrl,
   }) async {
@@ -1052,63 +1077,94 @@ class AppState extends ChangeNotifier {
       farmerId: farmerId,
       imageBytes: imageBytes,
       photoUrl: photoUrl,
+      role: role,
+      productName: productName,
     );
 
-    // Check if both parties have now uploaded
+    // Save evidence to Firestore (cross-device sync)
+    await _firestore.saveEvidence(evidence.toMap());
+
+    // Refresh evidence from Firestore to get all uploads (both phones)
+    await loadEvidenceFromFirestore(tradeId);
+
+    // Check if all photos are uploaded
     final tradeEvidence = getEvidenceForTrade(tradeId);
     final tradeIndex = _trades.indexWhere((t) => t.loopId == tradeId);
     if (tradeIndex == -1) return evidence;
 
     final trade = _trades[tradeIndex];
-    final participantIds = trade.participants.map((p) => p.farmerId).toSet();
-    final uploadedIds = tradeEvidence.map((e) => e.farmerId).toSet();
 
-    if (participantIds.every((id) => uploadedIds.contains(id))) {
-      // Both parties uploaded → compare
+    // For a 2-party trade: we need 4 photos total
+    // Farmer A: sending + receiving = 2
+    // Farmer B: sending + receiving = 2
+    final expectedCount = trade.participants.length * 2;
+    if (tradeEvidence.length >= expectedCount) {
       _autoCompareEvidence(tradeId, tradeEvidence, trade);
     }
 
     return evidence;
   }
 
-  /// Compare evidence from both parties using AI.
-  /// If reports match → complete trade. If mismatch → auto-file dispute.
+  /// Compare evidence per product: sender's photo vs receiver's photo.
+  /// If all products match → complete trade. If any mismatch → dispute.
   void _autoCompareEvidence(
     String tradeId,
     List<EvidenceModel> evidenceList,
     TradeModel trade,
   ) {
-    if (evidenceList.length < 2) return;
+    bool anyMismatch = false;
+    String mismatchDetails = '';
 
-    final e1 = evidenceList[0];
-    final e2 = evidenceList[1];
+    // For each participant, compare their SENDING photo with 
+    // the other party's RECEIVING photo (same product)
+    for (final participant in trade.participants) {
+      final senderEvidence = evidenceList.where(
+        (e) => e.farmerId == participant.farmerId && e.role == 'sending',
+      ).toList();
 
-    // Compare the quality scores
-    final freshDiff = (e1.freshnessScore - e2.freshnessScore).abs();
-    final damageDiff = (e1.damageScore - e2.damageScore).abs();
-    final colorDiff = (e1.colorScore - e2.colorScore).abs();
-    final sizeDiff = (e1.sizeScore - e2.sizeScore).abs();
-    final avgDiff = (freshDiff + damageDiff + colorDiff + sizeDiff) / 4;
+      if (senderEvidence.isEmpty) continue;
+      final senderReport = senderEvidence.first;
+      final product = senderReport.productName;
 
-    if (avgDiff <= 25) {
-      // Reports are similar enough → trade is legit, complete it
+      // Find the receiver's photo of this same product
+      final receiverEvidence = evidenceList.where(
+        (e) => e.farmerId != participant.farmerId && e.role == 'receiving' && e.productName == product,
+      ).toList();
+
+      if (receiverEvidence.isEmpty) continue;
+      final receiverReport = receiverEvidence.first;
+
+      // Compare sender vs receiver scores for this product
+      final freshDiff = (senderReport.freshnessScore - receiverReport.freshnessScore).abs();
+      final damageDiff = (senderReport.damageScore - receiverReport.damageScore).abs();
+      final colorDiff = (senderReport.colorScore - receiverReport.colorScore).abs();
+      final sizeDiff = (senderReport.sizeScore - receiverReport.sizeScore).abs();
+      final avgDiff = (freshDiff + damageDiff + colorDiff + sizeDiff) / 4;
+
+      if (avgDiff > 25) {
+        anyMismatch = true;
+        mismatchDetails +=
+            '$product: Sender (${participant.farmerName}) reported '
+            '${senderReport.conditionTag} (${senderReport.aiQualityScore.toStringAsFixed(0)}%), '
+            'Receiver reported '
+            '${receiverReport.conditionTag} (${receiverReport.aiQualityScore.toStringAsFixed(0)}%). '
+            'Diff: ${avgDiff.toStringAsFixed(1)}pts. ';
+      }
+    }
+
+    if (!anyMismatch) {
+      // All products match → trade is legit, complete it
       _executeTrade(tradeId);
     } else {
-      // Significant mismatch → auto-create dispute
-      final respondent = e1.farmerId;  // sender (first uploader)
-      final respondentName = trade.participants
-          .firstWhere((p) => p.farmerId == respondent, orElse: () => trade.participants.last)
-          .farmerName;
+      // Mismatch found → auto-create dispute
+      final respondent = trade.participants.first.farmerId;
+      final respondentName = trade.participants.first.farmerName;
 
       fileDispute(
         tradeId: tradeId,
         respondentId: respondent,
         respondentName: respondentName,
-        description:
-            'Auto-detected quality mismatch. '
-            'Sender reported: ${e1.conditionTag} (${e1.aiQualityScore.toStringAsFixed(0)}%). '
-            'Receiver reported: ${e2.conditionTag} (${e2.aiQualityScore.toStringAsFixed(0)}%). '
-            'Average score difference: ${avgDiff.toStringAsFixed(1)} points.',
+        description: 'Auto-detected quality mismatch. $mismatchDetails',
       );
 
       // Move trade to disputed status

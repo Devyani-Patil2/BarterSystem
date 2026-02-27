@@ -8,6 +8,7 @@ import '../../config/theme.dart';
 import '../../config/constants.dart';
 import '../../providers/app_state.dart';
 import '../../models/trade_model.dart';
+import '../../models/evidence_model.dart';
 
 class TradeDetailScreen extends StatelessWidget {
   final TradeModel trade;
@@ -430,192 +431,70 @@ class TradeDetailScreen extends StatelessWidget {
                 delay: const Duration(milliseconds: 600),
                 child: Builder(
                   builder: (ctx) {
-                    final myEvidence = appState.getMyEvidence(
-                      trade.loopId,
-                      currentUserId ?? '',
+                    // Load evidence from Firestore (other phone's uploads)
+                    appState.loadEvidenceFromFirestore(trade.loopId);
+
+                    // Find what current user is SENDING and RECEIVING
+                    final myParticipant = trade.participants.firstWhere(
+                      (p) => p.farmerId == currentUserId,
+                      orElse: () => trade.participants.first,
                     );
+                    final otherParticipant = trade.participants.firstWhere(
+                      (p) => p.farmerId != currentUserId,
+                      orElse: () => trade.participants.last,
+                    );
+
+                    final mySendingProduct = myParticipant.offerProduct;
+                    final myReceivingProduct = otherParticipant.offerProduct;
+
+                    final sendEvidence = appState.getMyEvidence(
+                      trade.loopId, currentUserId ?? '', 'sending',
+                    );
+                    final recvEvidence = appState.getMyEvidence(
+                      trade.loopId, currentUserId ?? '', 'receiving',
+                    );
+
                     final allEvidence = appState.getEvidenceForTrade(trade.loopId);
-                    final otherUploaded = allEvidence.any(
-                      (e) => e.farmerId != currentUserId,
-                    );
+                    final totalUploaded = allEvidence.length;
+                    final totalNeeded = trade.participants.length * 2;
 
                     return Column(
                       children: [
-                        // Upload button (only if not already uploaded)
-                        if (myEvidence == null)
-                          SizedBox(
-                            width: double.infinity,
-                            height: 56,
-                            child: ElevatedButton.icon(
-                              onPressed: () async {
-                                final picker = ImagePicker();
-                                final photo = await picker.pickImage(
-                                  source: ImageSource.camera,
-                                  imageQuality: 70,
-                                );
-
-                                if (photo != null && ctx.mounted) {
-                                  ScaffoldMessenger.of(ctx).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        'Analyzing with AI... 📸',
-                                        style: GoogleFonts.inter(),
-                                      ),
-                                      backgroundColor: AppTheme.skyBlue,
-                                    ),
-                                  );
-
-                                  final bytes = await photo.readAsBytes();
-                                  final appSt = ctx.read<AppState>();
-
-                                  await appSt.uploadEvidence(
-                                    tradeId: trade.loopId,
-                                    farmerId: currentUserId ?? '',
-                                    imageBytes: bytes,
-                                    photoUrl: photo.path,
-                                  );
-
-                                  // For demo: auto-upload mock evidence for other party
-                                  for (final p in trade.participants) {
-                                    if (p.farmerId != currentUserId) {
-                                      final mockEvidence = appSt.getMyEvidence(
-                                        trade.loopId,
-                                        p.farmerId,
-                                      );
-                                      if (mockEvidence == null) {
-                                        await appSt.uploadEvidence(
-                                          tradeId: trade.loopId,
-                                          farmerId: p.farmerId,
-                                          imageBytes: bytes,
-                                          photoUrl: photo.path,
-                                        );
-                                      }
-                                    }
-                                  }
-
-                                  if (ctx.mounted) {
-                                    ScaffoldMessenger.of(ctx).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          'Evidence uploaded! AI report generated. ✅',
-                                          style: GoogleFonts.inter(),
-                                        ),
-                                        backgroundColor: AppTheme.successGreen,
-                                      ),
-                                    );
-                                  }
-                                }
-                              },
-                              icon: const Icon(Icons.camera_alt_rounded),
-                              label: Text(
-                                'Upload Delivery Evidence 📸',
-                                style: GoogleFonts.outfit(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppTheme.skyBlue,
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                ),
-                              ),
-                            ),
+                        // ── SENDING EVIDENCE ─────────────────
+                        _evidenceSection(
+                          ctx: ctx,
+                          title: '📤 Sending: $mySendingProduct',
+                          subtitle: 'Photo of what YOU are sending',
+                          evidence: sendEvidence,
+                          buttonColor: AppTheme.skyBlue,
+                          onUpload: () => _uploadPhoto(
+                            ctx, trade.loopId, currentUserId ?? '',
+                            'sending', mySendingProduct, appState,
                           ),
+                        ),
 
-                        // Show AI Report Card if evidence exists
-                        if (myEvidence != null) ...[
-                          const SizedBox(height: 12),
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: AppTheme.primaryGreen.withValues(alpha: 0.2),
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.04),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    const Icon(Icons.smart_toy_rounded,
-                                        color: AppTheme.primaryGreen, size: 20),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      'Your AI Quality Report',
-                                      style: GoogleFonts.outfit(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: _conditionColor(myEvidence.conditionTag)
-                                            .withValues(alpha: 0.15),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Text(
-                                        myEvidence.conditionTag,
-                                        style: GoogleFonts.inter(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                          color: _conditionColor(myEvidence.conditionTag),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 14),
-                                // Overall Score
-                                Row(
-                                  children: [
-                                    Text('Overall Score: ',
-                                        style: GoogleFonts.inter(fontSize: 13)),
-                                    Text(
-                                      '${myEvidence.aiQualityScore.toStringAsFixed(0)}%',
-                                      style: GoogleFonts.outfit(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppTheme.primaryGreen,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-                                // Score bars
-                                _scoreBar('Freshness', myEvidence.freshnessScore),
-                                const SizedBox(height: 6),
-                                _scoreBar('Damage Check', myEvidence.damageScore),
-                                const SizedBox(height: 6),
-                                _scoreBar('Color Quality', myEvidence.colorScore),
-                                const SizedBox(height: 6),
-                                _scoreBar('Size Consistency', myEvidence.sizeScore),
-                              ],
-                            ),
+                        const SizedBox(height: 14),
+
+                        // ── RECEIVING EVIDENCE ───────────────
+                        _evidenceSection(
+                          ctx: ctx,
+                          title: '📥 Receiving: $myReceivingProduct',
+                          subtitle: 'Photo of what YOU received',
+                          evidence: recvEvidence,
+                          buttonColor: AppTheme.accentAmber,
+                          onUpload: () => _uploadPhoto(
+                            ctx, trade.loopId, currentUserId ?? '',
+                            'receiving', myReceivingProduct, appState,
                           ),
-                        ],
+                        ),
 
-                        // Upload status
+                        // Progress status
                         const SizedBox(height: 14),
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: (myEvidence != null && otherUploaded)
+                            color: totalUploaded >= totalNeeded
                                 ? AppTheme.successGreen.withValues(alpha: 0.08)
                                 : AppTheme.accentAmber.withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(12),
@@ -623,10 +502,10 @@ class TradeDetailScreen extends StatelessWidget {
                           child: Row(
                             children: [
                               Icon(
-                                (myEvidence != null && otherUploaded)
+                                totalUploaded >= totalNeeded
                                     ? Icons.check_circle_rounded
                                     : Icons.hourglass_top_rounded,
-                                color: (myEvidence != null && otherUploaded)
+                                color: totalUploaded >= totalNeeded
                                     ? AppTheme.successGreen
                                     : AppTheme.accentAmber,
                                 size: 20,
@@ -634,15 +513,13 @@ class TradeDetailScreen extends StatelessWidget {
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                  myEvidence == null
-                                      ? 'Upload your evidence to proceed'
-                                      : otherUploaded
-                                          ? 'Both parties uploaded. AI comparison complete!'
-                                          : 'Waiting for other party to upload evidence...',
+                                  totalUploaded >= totalNeeded
+                                      ? 'All photos uploaded! AI comparison complete.'
+                                      : 'Evidence: $totalUploaded / $totalNeeded photos uploaded',
                                   style: GoogleFonts.inter(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w500,
-                                    color: (myEvidence != null && otherUploaded)
+                                    color: totalUploaded >= totalNeeded
                                         ? AppTheme.successGreen
                                         : AppTheme.accentAmber,
                                   ),
@@ -735,6 +612,154 @@ class TradeDetailScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  /// Handle camera upload for a specific role (sending/receiving)
+  Future<void> _uploadPhoto(
+    BuildContext ctx,
+    String tradeId,
+    String farmerId,
+    String role,
+    String productName,
+    AppState appState,
+  ) async {
+    final picker = ImagePicker();
+    final photo = await picker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 70,
+    );
+
+    if (photo != null && ctx.mounted) {
+      ScaffoldMessenger.of(ctx).showSnackBar(
+        SnackBar(
+          content: Text('Analyzing $productName with AI... 📸',
+              style: GoogleFonts.inter()),
+          backgroundColor: AppTheme.skyBlue,
+        ),
+      );
+
+      final bytes = await photo.readAsBytes();
+      await appState.uploadEvidence(
+        tradeId: tradeId,
+        farmerId: farmerId,
+        role: role,
+        productName: productName,
+        imageBytes: bytes,
+        photoUrl: photo.path,
+      );
+
+      if (ctx.mounted) {
+        ScaffoldMessenger.of(ctx).showSnackBar(
+          SnackBar(
+            content: Text('$productName evidence ($role) uploaded & saved! ✅',
+                style: GoogleFonts.inter()),
+            backgroundColor: AppTheme.successGreen,
+          ),
+        );
+      }
+    }
+  }
+
+  /// Reusable evidence section: upload button + AI report card
+  Widget _evidenceSection({
+    required BuildContext ctx,
+    required String title,
+    required String subtitle,
+    required EvidenceModel? evidence,
+    required Color buttonColor,
+    required VoidCallback onUpload,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: GoogleFonts.outfit(
+          fontSize: 14, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 4),
+        Text(subtitle, style: GoogleFonts.inter(
+          fontSize: 12, color: Colors.grey.shade500)),
+        const SizedBox(height: 8),
+
+        if (evidence == null)
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton.icon(
+              onPressed: onUpload,
+              icon: const Icon(Icons.camera_alt_rounded, size: 18),
+              label: Text('Upload Photo',
+                style: GoogleFonts.outfit(
+                  fontSize: 14, fontWeight: FontWeight.w600)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: buttonColor,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+          )
+        else
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: AppTheme.primaryGreen.withValues(alpha: 0.2)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.03),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2)),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.smart_toy_rounded,
+                        color: AppTheme.primaryGreen, size: 18),
+                    const SizedBox(width: 6),
+                    Text('AI Report',
+                      style: GoogleFonts.outfit(
+                        fontSize: 13, fontWeight: FontWeight.w700)),
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: _conditionColor(evidence.conditionTag)
+                            .withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(8)),
+                      child: Text(evidence.conditionTag,
+                        style: GoogleFonts.inter(
+                          fontSize: 11, fontWeight: FontWeight.w600,
+                          color: _conditionColor(evidence.conditionTag))),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(children: [
+                  Text('Score: ', style: GoogleFonts.inter(fontSize: 12)),
+                  Text('${evidence.aiQualityScore.toStringAsFixed(0)}%',
+                    style: GoogleFonts.outfit(
+                      fontSize: 16, fontWeight: FontWeight.bold,
+                      color: AppTheme.primaryGreen)),
+                ]),
+                const SizedBox(height: 8),
+                _scoreBar('Freshness', evidence.freshnessScore),
+                const SizedBox(height: 4),
+                _scoreBar('Damage', evidence.damageScore),
+                const SizedBox(height: 4),
+                _scoreBar('Color', evidence.colorScore),
+                const SizedBox(height: 4),
+                _scoreBar('Size', evidence.sizeScore),
+              ],
+            ),
+          ),
+      ],
     );
   }
 
