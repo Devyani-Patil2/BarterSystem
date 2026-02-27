@@ -264,7 +264,8 @@ class ProfileScreen extends StatelessWidget {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.translate, color: AppTheme.skyBlue, size: 22),
+                          const Icon(Icons.translate,
+                              color: AppTheme.skyBlue, size: 22),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
@@ -354,6 +355,15 @@ class ProfileScreen extends StatelessWidget {
                             'Wallet',
                             () {
                               Navigator.pushNamed(context, '/wallet');
+                            },
+                          ),
+                          _divider(),
+                          _menuItem(
+                            context,
+                            Icons.history_rounded,
+                            'Credit History',
+                            () {
+                              Navigator.pushNamed(context, '/credit-history');
                             },
                           ),
                           _divider(),
