@@ -73,25 +73,67 @@ class AppState extends ChangeNotifier {
       _listings.where((l) => l.farmerId == _currentUser?.id).toList();
 
   /// Listings from OTHER users that match what the current user wants or offers.
-  /// A match = their offer matches my want, OR they want what I offer.
+  /// Sorted by: (1) fairness of value exchange, (2) farmer reputation.
   List<ListingModel> get matchingListings {
     if (_currentUser == null) return [];
-    final myOwnListings =
-        _listings.where((l) => l.farmerId == _currentUser!.id).toList();
+    final myOwnListings = _listings
+        .where((l) => l.farmerId == _currentUser!.id && l.status == 'active')
+        .toList();
     if (myOwnListings.isEmpty) return [];
 
     // Collect what I offer and what I want
     final myOffers = myOwnListings.map((l) => l.productType).toSet();
     final myWants = myOwnListings.map((l) => l.desiredProduct).toSet();
 
+    // Best valuation from my own listings (for fairness comparison)
+    final myBestValuation = myOwnListings
+        .map((l) => l.valuationScore)
+        .reduce((a, b) => a > b ? a : b);
+
     // Find OTHER users' active listings that match
-    return _listings.where((l) {
-      if (l.farmerId == _currentUser!.id) return false; // exclude my own
+    final matches = _listings.where((l) {
+      if (l.farmerId == _currentUser!.id) return false;
       if (l.status != 'active') return false;
-      // Their offer is something I want, OR they want something I offer
       return myWants.contains(l.productType) ||
           myOffers.contains(l.desiredProduct);
     }).toList();
+
+    // Sort: best fairness + highest reputation first
+    matches.sort((a, b) {
+      // Fairness = how close their valuation is to mine (lower diff = better)
+      final fairnessA = (a.valuationScore - myBestValuation).abs();
+      final fairnessB = (b.valuationScore - myBestValuation).abs();
+
+      // Get reputation of the farmer
+      final repA = _users
+              .where((u) => u.id == a.farmerId)
+              .firstOrNull
+              ?.reputationScore ??
+          50.0;
+      final repB = _users
+              .where((u) => u.id == b.farmerId)
+              .firstOrNull
+              ?.reputationScore ??
+          50.0;
+
+      // Combined score: lower fairness gap is better, higher rep is better
+      // Normalize: fairness 0-10000 → 0-100, rep already 0-100
+      final scoreA = (100 - (fairnessA / 100).clamp(0, 100)) * 0.5 + repA * 0.5;
+      final scoreB = (100 - (fairnessB / 100).clamp(0, 100)) * 0.5 + repB * 0.5;
+
+      return scoreB.compareTo(scoreA); // Higher score first
+    });
+
+    return matches;
+  }
+
+  /// Calculate fairness percentage between two valuations.
+  double getFairnessPercent(double myValue, double theirValue) {
+    if (myValue == 0 && theirValue == 0) return 100;
+    final maxVal = myValue > theirValue ? myValue : theirValue;
+    if (maxVal == 0) return 100;
+    final diff = (myValue - theirValue).abs();
+    return ((1 - diff / maxVal) * 100).clamp(0, 100);
   }
 
   List<TradeModel> get trades => _trades;
