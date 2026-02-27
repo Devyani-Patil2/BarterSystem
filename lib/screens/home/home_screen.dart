@@ -28,7 +28,8 @@ class HomeScreen extends StatelessWidget {
             backgroundColor: AppTheme.primaryGreen,
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
-                decoration: const BoxDecoration(gradient: AppTheme.heroGradient),
+                decoration:
+                    const BoxDecoration(gradient: AppTheme.heroGradient),
                 child: SafeArea(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
@@ -67,7 +68,8 @@ class HomeScreen extends StatelessWidget {
                                     'Namaste! 🙏',
                                     style: GoogleFonts.inter(
                                       fontSize: 13,
-                                      color: Colors.white.withValues(alpha: 0.8),
+                                      color:
+                                          Colors.white.withValues(alpha: 0.8),
                                     ),
                                   ),
                                   Text(
@@ -98,7 +100,9 @@ class HomeScreen extends StatelessWidget {
                                       size: 22,
                                     ),
                                   ),
-                                  if (appState.myTrades.where((t) => t.status == 'pending').isNotEmpty)
+                                  if (appState.myTrades
+                                      .where((t) => t.status == 'pending')
+                                      .isNotEmpty)
                                     Positioned(
                                       right: 8,
                                       top: 8,
@@ -128,7 +132,8 @@ class HomeScreen extends StatelessWidget {
                                   width: 44,
                                   height: 44,
                                   decoration: BoxDecoration(
-                                    color: AppTheme.accentAmber.withValues(alpha: 0.2),
+                                    color: AppTheme.accentAmber
+                                        .withValues(alpha: 0.2),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: const Icon(
@@ -140,13 +145,15 @@ class HomeScreen extends StatelessWidget {
                                 const SizedBox(width: 14),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'Credit Balance',
                                         style: GoogleFonts.inter(
                                           fontSize: 12,
-                                          color: Colors.white.withValues(alpha: 0.7),
+                                          color: Colors.white
+                                              .withValues(alpha: 0.7),
                                         ),
                                       ),
                                       Text(
@@ -173,7 +180,8 @@ class HomeScreen extends StatelessWidget {
                                     ),
                                   ),
                                   progressColor: AppTheme.accentAmberLight,
-                                  backgroundColor: Colors.white.withValues(alpha: 0.2),
+                                  backgroundColor:
+                                      Colors.white.withValues(alpha: 0.2),
                                 ),
                               ],
                             ),
@@ -210,7 +218,8 @@ class HomeScreen extends StatelessWidget {
                   // Active Trade Loops
                   FadeInUp(
                     delay: const Duration(milliseconds: 200),
-                    child: _buildSectionHeader('Active Trade Loops', Icons.swap_horiz_rounded),
+                    child: _buildSectionHeader(
+                        'Active Trade Loops', Icons.swap_horiz_rounded),
                   ),
                   const SizedBox(height: 12),
                   FadeInUp(
@@ -222,7 +231,8 @@ class HomeScreen extends StatelessWidget {
                   // Recent Listings
                   FadeInUp(
                     delay: const Duration(milliseconds: 400),
-                    child: _buildSectionHeader('Marketplace', Icons.storefront_rounded),
+                    child: _buildSectionHeader(
+                        'Matching Marketplace', Icons.handshake_rounded),
                   ),
                   const SizedBox(height: 12),
                   FadeInUp(
@@ -500,7 +510,8 @@ class HomeScreen extends StatelessWidget {
 
   Widget _tradeLoopCard(BuildContext context, trade, AppState appState) {
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, '/trade-detail', arguments: trade),
+      onTap: () =>
+          Navigator.pushNamed(context, '/trade-detail', arguments: trade),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -523,7 +534,8 @@ class HomeScreen extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: AppTheme.accentAmber.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
@@ -539,7 +551,8 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const Spacer(),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
                     color: AppTheme.accentAmber.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
@@ -563,7 +576,9 @@ class HomeScreen extends StatelessWidget {
               children: [
                 for (int i = 0; i < trade.participants.length; i++) ...[
                   Chip(
-                    avatar: Text(AppConstants.productEmojis[trade.participants[i].offerProduct] ?? '📦'),
+                    avatar: Text(AppConstants.productEmojis[
+                            trade.participants[i].offerProduct] ??
+                        '📦'),
                     label: Text(
                       trade.participants[i].farmerName.split(' ').first,
                       style: GoogleFonts.inter(fontSize: 11),
@@ -574,16 +589,19 @@ class HomeScreen extends StatelessWidget {
                   if (i < trade.participants.length - 1)
                     const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 2),
-                      child: Icon(Icons.arrow_forward, size: 16, color: AppTheme.primaryGreen),
+                      child: Icon(Icons.arrow_forward,
+                          size: 16, color: AppTheme.primaryGreen),
                     ),
                 ],
-                const Icon(Icons.replay, size: 16, color: AppTheme.primaryGreen),
+                const Icon(Icons.replay,
+                    size: 16, color: AppTheme.primaryGreen),
               ],
             ),
             const SizedBox(height: 12),
             Row(
               children: [
-                const Icon(Icons.touch_app, size: 14, color: AppTheme.primaryGreen),
+                const Icon(Icons.touch_app,
+                    size: 14, color: AppTheme.primaryGreen),
                 const SizedBox(width: 4),
                 Text(
                   'Tap to view details & confirm',
@@ -602,7 +620,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildRecentListings(BuildContext context, AppState appState) {
-    final listings = appState.activeListings.take(4).toList();
+    final listings = appState.matchingListings.take(4).toList();
 
     if (listings.isEmpty) {
       return Container(
@@ -611,11 +629,28 @@ class HomeScreen extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
         ),
-        child: Center(
-          child: Text(
-            'No active listings',
-            style: GoogleFonts.inter(fontSize: 14, color: Colors.grey.shade500),
-          ),
+        child: Column(
+          children: [
+            Icon(Icons.handshake_rounded,
+                size: 40, color: Colors.grey.shade300),
+            const SizedBox(height: 8),
+            Text(
+              appState.myListings.isEmpty
+                  ? 'Create a listing to find matches'
+                  : 'No matching listings yet',
+              style:
+                  GoogleFonts.inter(fontSize: 14, color: Colors.grey.shade500),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              appState.myListings.isEmpty
+                  ? 'Post what you offer & want to see matches here'
+                  : 'Other farmers will appear when they match your needs',
+              textAlign: TextAlign.center,
+              style:
+                  GoogleFonts.inter(fontSize: 12, color: Colors.grey.shade400),
+            ),
+          ],
         ),
       );
     }
@@ -625,7 +660,8 @@ class HomeScreen extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.only(bottom: 10),
           child: GestureDetector(
-            onTap: () => Navigator.pushNamed(context, '/listing-detail', arguments: listing),
+            onTap: () => Navigator.pushNamed(context, '/listing-detail',
+                arguments: listing),
             child: Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
@@ -680,17 +716,27 @@ class HomeScreen extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(
-                        'Wants',
-                        style: GoogleFonts.inter(
-                          fontSize: 10,
-                          color: Colors.grey.shade500,
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryGreen.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          '✓ Match',
+                          style: GoogleFonts.inter(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.primaryGreen,
+                          ),
                         ),
                       ),
+                      const SizedBox(height: 2),
                       Text(
-                        listing.desiredProduct,
+                        'Wants ${listing.desiredProduct}',
                         style: GoogleFonts.inter(
-                          fontSize: 13,
+                          fontSize: 11,
                           fontWeight: FontWeight.w600,
                           color: AppTheme.primaryGreen,
                         ),

@@ -65,6 +65,29 @@ class AppState extends ChangeNotifier {
       _listings.where((l) => l.status == 'active').toList();
   List<ListingModel> get myListings =>
       _listings.where((l) => l.farmerId == _currentUser?.id).toList();
+
+  /// Listings from OTHER users that match what the current user wants or offers.
+  /// A match = their offer matches my want, OR they want what I offer.
+  List<ListingModel> get matchingListings {
+    if (_currentUser == null) return [];
+    final myOwnListings =
+        _listings.where((l) => l.farmerId == _currentUser!.id).toList();
+    if (myOwnListings.isEmpty) return [];
+
+    // Collect what I offer and what I want
+    final myOffers = myOwnListings.map((l) => l.productType).toSet();
+    final myWants = myOwnListings.map((l) => l.desiredProduct).toSet();
+
+    // Find OTHER users' active listings that match
+    return _listings.where((l) {
+      if (l.farmerId == _currentUser!.id) return false; // exclude my own
+      if (l.status != 'active') return false;
+      // Their offer is something I want, OR they want something I offer
+      return myWants.contains(l.productType) ||
+          myOffers.contains(l.desiredProduct);
+    }).toList();
+  }
+
   List<TradeModel> get trades => _trades;
   List<TradeModel> get myTrades => _trades
       .where((t) => t.participants.any((p) => p.farmerId == _currentUser?.id))
