@@ -30,9 +30,20 @@ class _LoginScreenState extends State<LoginScreen> {
     final fullPhone = '+91$phone';
 
     final appState = context.read<AppState>();
-    await appState.sendOtp(fullPhone);
+    await appState.checkPhone(fullPhone);
 
     if (!mounted) return;
+
+    if (appState.authError != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${appState.authError}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     Navigator.pushNamed(
       context,
       '/otp',

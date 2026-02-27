@@ -2,7 +2,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user_model.dart';
 import '../models/listing_model.dart';
 import '../models/trade_model.dart';
@@ -44,6 +43,8 @@ class AppState extends ChangeNotifier {
   String? get verificationId => _verificationId;
   int get currentTabIndex => _currentTabIndex;
   bool get isDarkMode => _isDarkMode;
+  String? get authError => _authError;
+  bool get isNewUser => _isNewUser;
 
   List<UserModel> get users => _users;
   List<ListingModel> get listings => _listings;
@@ -76,84 +77,82 @@ class AppState extends ChangeNotifier {
   final _uuid = const Uuid();
   final _random = Random();
 
-  // ─── AUTHENTICATION ───────────────────────────────────────
+  // ─── PHONE + PIN AUTHENTICATION ────────────────────────────
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  String? _firebaseVerificationId;
-  int? _forceResendingToken;
+  String? _authError;
+  bool _isNewUser = false;
+  String _pendingPhone = '';
 
-  Future<void> sendOtp(String phoneNumber) async {
+  /// Check if phone number has a registered PIN
+  Future<void> checkPhone(String phoneNumber) async {
     _isLoading = true;
+    _authError = null;
+    _pendingPhone = phoneNumber;
     notifyListeners();
 
-    try {
-      await _auth.verifyPhoneNumber(
-        phoneNumber: phoneNumber,
-        timeout: const Duration(seconds: 60),
-        forceResendingToken: _forceResendingToken,
-        verificationCompleted: (PhoneAuthCredential credential) async {
-          // Auto-verify on Android (auto-read SMS)
-          await _auth.signInWithCredential(credential);
-          _isAuthenticated = true;
-          _isLoading = false;
-          notifyListeners();
-        },
-        verificationFailed: (FirebaseAuthException e) {
-          _isLoading = false;
-          debugPrint('Phone verification failed: ${e.message}');
-          notifyListeners();
-        },
-        codeSent: (String verificationId, int? resendToken) {
-          _firebaseVerificationId = verificationId;
-          _verificationId = verificationId;
-          _forceResendingToken = resendToken;
-          _isLoading = false;
-          notifyListeners();
-        },
-        codeAutoRetrievalTimeout: (String verificationId) {
-          _firebaseVerificationId = verificationId;
-        },
-      );
-    } catch (e) {
-      _isLoading = false;
-      debugPrint('Error sending OTP: $e');
-      notifyListeners();
-    }
+    final prefs = await SharedPreferences.getInstance();
+    final storedPin = prefs.getString('pin_$phoneNumber');
+
+    _isNewUser = (storedPin == null);
+    _verificationId = phoneNumber;
+    _isLoading = false;
+    notifyListeners();
   }
 
-  Future<bool> verifyOtp(String otp) async {
+  /// Register a new 4-digit PIN for the phone number
+  Future<bool> registerPin(String pin) async {
     _isLoading = true;
+    _authError = null;
     notifyListeners();
 
-    try {
-      if (_firebaseVerificationId == null) {
-        _isLoading = false;
-        notifyListeners();
-        return false;
-      }
-
-      final credential = PhoneAuthProvider.credential(
-        verificationId: _firebaseVerificationId!,
-        smsCode: otp,
-      );
-
-      await _auth.signInWithCredential(credential);
-      _isAuthenticated = true;
-      _isLoading = false;
-      notifyListeners();
-      return true;
-    } on FirebaseAuthException catch (e) {
-      debugPrint('OTP verification failed: ${e.message}');
-      _isLoading = false;
-      notifyListeners();
-      return false;
-    } catch (e) {
-      debugPrint('OTP verification error: $e');
+    if (pin.length != 4) {
+      _authError = 'PIN must be 4 digits';
       _isLoading = false;
       notifyListeners();
       return false;
     }
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('pin_$_pendingPhone', pin);
+
+    _isAuthenticated = true;
+    _isLoading = false;
+    notifyListeners();
+    return true;
   }
+
+  /// Verify PIN for existing user
+  Future<bool> verifyPin(String pin) async {
+    _isLoading = true;
+    _authError = null;
+    notifyListeners();
+
+    final prefs = await SharedPreferences.getInstance();
+    final storedPin = prefs.getString('pin_$_pendingPhone');
+
+    if (storedPin == null) {
+      _authError = 'No account found. Please sign up first.';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+
+    if (storedPin != pin) {
+      _authError = 'Incorrect PIN. Please try again.';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+
+    _isAuthenticated = true;
+    _isLoading = false;
+    notifyListeners();
+    return true;
+  }
+
+  // Compatibility wrappers
+  Future<void> sendOtp(String phoneNumber) async => checkPhone(phoneNumber);
+  Future<bool> verifyOtp(String pin) async => verifyPin(pin);
 
   Future<void> setupProfile({
     required String name,
@@ -203,8 +202,9 @@ class AppState extends ChangeNotifier {
 
   Future<void> signOut() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
-    await _auth.signOut();
+    // Only remove session keys, keep PIN data
+    await prefs.remove('userId');
+    await prefs.remove('userName');
     _isAuthenticated = false;
     _currentUser = null;
     _users.clear();
