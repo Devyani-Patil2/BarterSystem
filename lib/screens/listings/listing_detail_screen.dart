@@ -516,15 +516,13 @@ class ListingDetailScreen extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: () {
               Navigator.pop(ctx);
-              // Create a direct trade between the two listings
-              appState.addListing(myListing.copyWith(status: 'in_trade'));
-              appState.updateListingStatus(myListing.id, 'in_trade');
-              appState.updateListingStatus(theirListing.id, 'in_trade');
+              // Create actual trade via AppState
+              appState.acceptDirectTrade(myListing, theirListing);
 
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    '🤝 Trade request sent to ${theirListing.farmerName}!',
+                    '🤝 Trade created with ${theirListing.farmerName}! Check Active Trades',
                     style: GoogleFonts.inter(),
                   ),
                   backgroundColor: AppTheme.primaryGreen,

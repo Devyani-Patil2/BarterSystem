@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
@@ -117,7 +117,7 @@ class AppState extends ChangeNotifier {
           50.0;
 
       // Combined score: lower fairness gap is better, higher rep is better
-      // Normalize: fairness 0-10000 → 0-100, rep already 0-100
+      // Normalize: fairness 0-10000 â†’ 0-100, rep already 0-100
       final scoreA = (100 - (fairnessA / 100).clamp(0, 100)) * 0.5 + repA * 0.5;
       final scoreB = (100 - (fairnessB / 100).clamp(0, 100)) * 0.5 + repB * 0.5;
 
@@ -166,7 +166,7 @@ class AppState extends ChangeNotifier {
   final _qualityAnalysis = QualityAnalysisService.instance;
   final _imageComparison = ImageComparisonService.instance;
 
-  // ─── PHONE + PIN AUTHENTICATION ────────────────────────────
+  // â”€â”€â”€ PHONE + PIN AUTHENTICATION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   String? _authError;
   bool _isNewUser = false;
@@ -285,12 +285,10 @@ class AppState extends ChangeNotifier {
     // Sync to Firestore for cross-device visibility
     await _firestore.saveUser(_currentUser!);
 
-    // Seed mandi prices into SQLite and try to fetch latest from API
+    // Seed mandi prices and try to fetch latest from API
     await _mandiPrices.seedDefaultPrices();
-    _mandiPrices.fetchLatestPrices(); // Fire and forget (non-blocking)
+    _mandiPrices.fetchLatestPrices();
 
-    // Load seed data after setup (checks db first)
-    await _loadSeedData();
     // Start real-time listeners for cross-device sync
     _startListeningToFirestore();
     notifyListeners();
@@ -325,10 +323,6 @@ class AppState extends ChangeNotifier {
       // Start real-time listeners for cross-device sync
       _startListeningToFirestore();
 
-      // Seed if no listings exist yet
-      if (_listings.isEmpty) {
-        await _loadSeedData();
-      }
       notifyListeners();
     }
   }
@@ -350,7 +344,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ─── NAVIGATION ───────────────────────────────────────────
+  // â”€â”€â”€ NAVIGATION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   void setTabIndex(int index) {
     _currentTabIndex = index;
@@ -374,13 +368,13 @@ class AppState extends ChangeNotifier {
           listing.latitude,
           listing.longitude,
         ) /
-        1000; // meters → km
+        1000; // meters â†’ km
   }
 
-  /// Estimate transport cost based on distance (₹5/km baseline).
+  /// Estimate transport cost based on distance (â‚¹5/km baseline).
   double estimateTransportCost(double distanceKm) {
     if (distanceKm <= 5) return 0; // Free within 5 km
-    return (distanceKm - 5) * 5; // ₹5 per km above 5 km
+    return (distanceKm - 5) * 5; // â‚¹5 per km above 5 km
   }
 
   /// Get listings sorted by proximity to the current user.
@@ -394,7 +388,7 @@ class AppState extends ChangeNotifier {
     return list;
   }
 
-  // ─── THEME ───────────────────────────────────────────────
+  // â”€â”€â”€ THEME â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Future<void> toggleTheme() async {
     _isDarkMode = !_isDarkMode;
@@ -402,9 +396,9 @@ class AppState extends ChangeNotifier {
     await prefs.setBool('isDarkMode', _isDarkMode);
     notifyListeners();
   }
-  // ─── URGENT REQUESTS ──────────────────────────────────────
+  // â”€â”€â”€ URGENT REQUESTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-  // ─── DATABASE LOADING ──────────────────────────────────────
+  // â”€â”€â”€ DATABASE LOADING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   /// Load all data from Firestore (cross-device shared data)
   Future<void> _loadDataFromFirestore() async {
@@ -457,7 +451,7 @@ class AppState extends ChangeNotifier {
     super.dispose();
   }
 
-  // ─── URGENT REQUEST ACTIONS ───────────────────────────────
+  // â”€â”€â”€ URGENT REQUEST ACTIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   /// Post an urgent request. The requester is willing to spend credits
   /// to get something they need right now.
@@ -520,7 +514,7 @@ class AppState extends ChangeNotifier {
       fulfilledAt: DateTime.now(),
     );
 
-    // Transfer credits: requester pays → fulfiller earns
+    // Transfer credits: requester pays â†’ fulfiller earns
     // Debit requester
     if (requesterIndex != -1) {
       _users[requesterIndex] = _users[requesterIndex].copyWith(
@@ -582,7 +576,7 @@ class AppState extends ChangeNotifier {
     }
     // Transactions stay in-memory
 
-    // 🔔 Notify about urgent request fulfillment
+    // ðŸ”” Notify about urgent request fulfillment
     _notifications.notifyRequestFulfilled(request.productNeeded);
 
     notifyListeners();
@@ -602,7 +596,56 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ─── LISTINGS ─────────────────────────────────────────────
+  // â”€â”€â”€ DIRECT TRADE (from Matching Marketplace) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+  /// Accept a direct barter trade between current user's listing and another farmer's listing.
+  void acceptDirectTrade(ListingModel myListing, ListingModel theirListing) {
+    // Create trade with both participants
+    final trade = TradeModel(
+      loopId: _uuid.v4(),
+      participants: [
+        TradeParticipant(
+          farmerId: myListing.farmerId,
+          farmerName: myListing.farmerName,
+          listingId: myListing.id,
+          offerProduct: myListing.productType,
+          wantProduct: myListing.desiredProduct,
+          offerQuantity: myListing.quantity,
+          unit: myListing.unit,
+          valuationAmount: myListing.valuationScore,
+          confirmationStatus: 'confirmed', // I confirmed
+        ),
+        TradeParticipant(
+          farmerId: theirListing.farmerId,
+          farmerName: theirListing.farmerName,
+          listingId: theirListing.id,
+          offerProduct: theirListing.productType,
+          wantProduct: theirListing.desiredProduct,
+          offerQuantity: theirListing.quantity,
+          unit: theirListing.unit,
+          valuationAmount: theirListing.valuationScore,
+          confirmationStatus: 'pending', // They need to confirm
+        ),
+      ],
+      status: 'pending',
+    );
+
+    _trades.insert(0, trade);
+    _firestore.saveTrade(trade);
+
+    // Update listing statuses
+    updateListingStatus(myListing.id, 'in_trade');
+    updateListingStatus(theirListing.id, 'in_trade');
+
+    // Notify
+    _notifications.notifyTradeMatched(
+      '${myListing.productType} â†” ${theirListing.productType}',
+    );
+
+    notifyListeners();
+  }
+
+  // â”€â”€â”€ LISTINGS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   void addListing(ListingModel listing) {
     _listings.insert(0, listing);
@@ -624,7 +667,7 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  // ─── TRADE MATCHING ENGINE ────────────────────────────────
+  // â”€â”€â”€ TRADE MATCHING ENGINE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   /// Build directed graph and detect cycles for multilateral trades.
   /// Nodes = Listings, Edge exists if listing A's desiredProduct == listing B's productType
@@ -729,14 +772,14 @@ class AppState extends ChangeNotifier {
     // Already synced via _firestore.saveTrade above
     _firestore.saveTrade(trade);
 
-    // 🔔 Notify about new trade match
-    final productFlow = participants.map((p) => p.offerProduct).join(' → ');
+    // ðŸ”” Notify about new trade match
+    final productFlow = participants.map((p) => p.offerProduct).join(' â†’ ');
     _notifications.notifyTradeMatched(productFlow);
 
     notifyListeners();
   }
 
-  // ─── TRADE ACTIONS ────────────────────────────────────────
+  // â”€â”€â”€ TRADE ACTIONS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   void confirmTrade(String loopId, String farmerId) {
     final tradeIndex = _trades.indexWhere((t) => t.loopId == loopId);
@@ -810,7 +853,7 @@ class AppState extends ChangeNotifier {
           fromUserId: giver.farmerId,
           toUserId: receiver.farmerId,
           amount: giver.valuationAmount,
-          description: '${giver.offerProduct} → ${receiver.farmerName}',
+          description: '${giver.offerProduct} â†’ ${receiver.farmerName}',
         ),
       );
 
@@ -853,7 +896,7 @@ class AppState extends ChangeNotifier {
 
     _firestore.updateTrade(_trades[tradeIndex]);
 
-    // 🔔 Notify about trade completion
+    // ðŸ”” Notify about trade completion
     final tradeProducts =
         trade.participants.map((p) => p.offerProduct).join(', ');
     _notifications.notifyTradeCompleted(tradeProducts);
@@ -861,7 +904,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ─── VALUATION ENGINE ─────────────────────────────────────
+  // â”€â”€â”€ VALUATION ENGINE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   /// Calculate valuation using REAL mandi prices from API/SQLite
   /// and REAL demand factor from actual listing supply/demand.
@@ -907,8 +950,8 @@ class AppState extends ChangeNotifier {
         .length;
 
     if (supplyCount == 0 && demandCount == 0) return 1.0;
-    if (supplyCount == 0) return 1.5; // High demand, no supply → premium
-    if (demandCount == 0) return 0.7; // No demand → discount
+    if (supplyCount == 0) return 1.5; // High demand, no supply â†’ premium
+    if (demandCount == 0) return 0.7; // No demand â†’ discount
 
     // Demand/supply ratio, clamped to reasonable range [0.5, 2.0]
     final ratio = demandCount / supplyCount;
@@ -928,11 +971,11 @@ class AppState extends ChangeNotifier {
     return _calculateValuation(productType, quantity, qualityScore);
   }
 
-  // ─── AI QUALITY SCORING (REAL IMAGE ANALYSIS) ─────────────
+  // â”€â”€â”€ AI QUALITY SCORING (REAL IMAGE ANALYSIS) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   /// Analyze a real crop photo for quality scoring.
   /// Uses pixel-level analysis: brightness, saturation, green ratio,
-  /// brown ratio, uniformity — NOT random numbers.
+  /// brown ratio, uniformity â€” NOT random numbers.
   Future<EvidenceModel> generateQualityScoreFromImage({
     required String tradeId,
     required String farmerId,
@@ -991,7 +1034,7 @@ class AppState extends ChangeNotifier {
     return evidence;
   }
 
-  // ─── DISPUTE SYSTEM (REAL IMAGE COMPARISON) ────────────────
+  // â”€â”€â”€ DISPUTE SYSTEM (REAL IMAGE COMPARISON) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   /// File a dispute with REAL image comparison when photos are provided.
   Future<DisputeModel> fileDisputeWithImages({
@@ -1171,7 +1214,7 @@ class AppState extends ChangeNotifier {
     }
   }
 
-  // ─── REPUTATION ───────────────────────────────────────────
+  // â”€â”€â”€ REPUTATION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   double calculateReputation(UserModel user) {
     final completionRate = user.totalTrades > 0
@@ -1190,296 +1233,4 @@ class AppState extends ChangeNotifier {
         100;
   }
 
-  // ─── SEED DATA ────────────────────────────────────────────
-
-  Future<void> _loadSeedData() async {
-    // Check if seed data already in db
-    // Check Firestore instead of SQLite
-    final existingListings = await _firestore.getListings();
-    final hasData = existingListings.isNotEmpty;
-    if (hasData) return;
-    // Create sample farmers
-    _users = [
-      if (_currentUser != null) _currentUser!,
-      UserModel(
-        id: 'farmer_001',
-        phone: '+91 9876543001',
-        name: 'Rajesh Kumar',
-        village: 'Sundarpur',
-        latitude: 26.92,
-        longitude: 81.05,
-        reputationScore: 88,
-        creditBalance: 2500,
-        totalTrades: 12,
-      ),
-      UserModel(
-        id: 'farmer_002',
-        phone: '+91 9876543002',
-        name: 'Priya Devi',
-        village: 'Govindnagar',
-        latitude: 26.87,
-        longitude: 80.98,
-        reputationScore: 92,
-        creditBalance: 3200,
-        totalTrades: 18,
-      ),
-      UserModel(
-        id: 'farmer_003',
-        phone: '+91 9876543003',
-        name: 'Suresh Yadav',
-        village: 'Krishnapur',
-        latitude: 26.95,
-        longitude: 81.12,
-        reputationScore: 76,
-        creditBalance: 1800,
-        totalTrades: 8,
-        disputeCount: 2,
-      ),
-      UserModel(
-        id: 'farmer_004',
-        phone: '+91 9876543004',
-        name: 'Meena Sharma',
-        village: 'Laxminagar',
-        latitude: 26.88,
-        longitude: 81.03,
-        reputationScore: 95,
-        creditBalance: 4100,
-        totalTrades: 24,
-      ),
-      UserModel(
-        id: 'farmer_005',
-        phone: '+91 9876543005',
-        name: 'Vikram Singh',
-        village: 'Chandpur',
-        latitude: 26.90,
-        longitude: 80.96,
-        reputationScore: 82,
-        creditBalance: 2100,
-        totalTrades: 10,
-        disputeCount: 1,
-      ),
-    ];
-
-    // Create sample listings (some form perfect loops)
-    _listings = [
-      // Loop 1: Wheat → Seeds → Tractor Service → Wheat
-      ListingModel(
-        id: 'listing_001',
-        farmerId: 'farmer_001',
-        farmerName: 'Rajesh Kumar',
-        farmerVillage: 'Sundarpur',
-        productType: 'Wheat',
-        quantity: 100,
-        unit: 'kg',
-        desiredProduct: 'Seeds',
-        valuationScore: 2500,
-        status: 'active',
-      ),
-      ListingModel(
-        id: 'listing_002',
-        farmerId: 'farmer_002',
-        farmerName: 'Priya Devi',
-        farmerVillage: 'Govindnagar',
-        productType: 'Seeds',
-        quantity: 20,
-        unit: 'kg',
-        desiredProduct: 'Tractor Service',
-        valuationScore: 2000,
-        status: 'active',
-      ),
-      ListingModel(
-        id: 'listing_003',
-        farmerId: 'farmer_003',
-        farmerName: 'Suresh Yadav',
-        farmerVillage: 'Krishnapur',
-        productType: 'Tractor Service',
-        quantity: 5,
-        unit: 'hour',
-        desiredProduct: 'Wheat',
-        valuationScore: 2500,
-        status: 'active',
-      ),
-      // Additional listings
-      ListingModel(
-        id: 'listing_004',
-        farmerId: 'farmer_004',
-        farmerName: 'Meena Sharma',
-        farmerVillage: 'Laxminagar',
-        productType: 'Rice',
-        quantity: 200,
-        unit: 'kg',
-        desiredProduct: 'Vegetables',
-        valuationScore: 7000,
-        status: 'active',
-      ),
-      ListingModel(
-        id: 'listing_005',
-        farmerId: 'farmer_005',
-        farmerName: 'Vikram Singh',
-        farmerVillage: 'Chandpur',
-        productType: 'Vegetables',
-        quantity: 50,
-        unit: 'kg',
-        desiredProduct: 'Fertilizer',
-        valuationScore: 1500,
-        status: 'active',
-      ),
-      ListingModel(
-        id: 'listing_006',
-        farmerId: 'farmer_001',
-        farmerName: 'Rajesh Kumar',
-        farmerVillage: 'Sundarpur',
-        productType: 'Fertilizer',
-        quantity: 30,
-        unit: 'bag',
-        desiredProduct: 'Rice',
-        valuationScore: 4500,
-        status: 'active',
-      ),
-      ListingModel(
-        id: 'listing_007',
-        farmerId: 'farmer_004',
-        farmerName: 'Meena Sharma',
-        farmerVillage: 'Laxminagar',
-        productType: 'Dairy',
-        quantity: 50,
-        unit: 'litre',
-        desiredProduct: 'Fodder',
-        valuationScore: 2750,
-        status: 'active',
-      ),
-    ];
-
-    // Create a sample completed trade
-    _trades = [
-      TradeModel(
-        loopId: 'trade_001',
-        participants: [
-          TradeParticipant(
-            farmerId: 'farmer_001',
-            farmerName: 'Rajesh Kumar',
-            listingId: 'old_listing_1',
-            offerProduct: 'Corn',
-            wantProduct: 'Labor Service',
-            offerQuantity: 50,
-            unit: 'kg',
-            valuationAmount: 1000,
-            confirmationStatus: 'confirmed',
-          ),
-          TradeParticipant(
-            farmerId: 'farmer_005',
-            farmerName: 'Vikram Singh',
-            listingId: 'old_listing_2',
-            offerProduct: 'Labor Service',
-            wantProduct: 'Corn',
-            offerQuantity: 3,
-            unit: 'day',
-            valuationAmount: 900,
-            confirmationStatus: 'confirmed',
-          ),
-        ],
-        status: 'completed',
-        completedAt: DateTime.now().subtract(const Duration(days: 3)),
-      ),
-    ];
-
-    // Sample transactions
-    _transactions = [
-      CreditTransactionModel(
-        id: 'txn_001',
-        userId: _currentUser?.id ?? '',
-        amount: 1000.0,
-        type: 'credit',
-        description: 'Welcome bonus credits',
-        balanceAfter: 1000.0,
-        timestamp: DateTime.now().subtract(const Duration(days: 5)),
-      ),
-      CreditTransactionModel(
-        id: 'txn_002',
-        userId: _currentUser?.id ?? '',
-        fromUserId: _currentUser?.id,
-        toUserId: 'farmer_001',
-        amount: 250.0,
-        type: 'debit',
-        tradeId: 'trade_001',
-        description: 'Trade settlement - Sent Wheat',
-        balanceAfter: 750.0,
-        timestamp: DateTime.now().subtract(const Duration(days: 3)),
-      ),
-      CreditTransactionModel(
-        id: 'txn_003',
-        userId: _currentUser?.id ?? '',
-        fromUserId: 'farmer_002',
-        toUserId: _currentUser?.id,
-        amount: 300.0,
-        type: 'credit',
-        tradeId: 'trade_001',
-        description: 'Trade settlement - Received Seeds',
-        balanceAfter: 1050.0,
-        timestamp: DateTime.now().subtract(const Duration(days: 3)),
-      ),
-    ];
-    // Sample urgent requests from other farmers
-    _urgentRequests.addAll([
-      UrgentRequestModel(
-        id: 'urgent_001',
-        requesterId: 'farmer_003',
-        requesterName: 'Suresh Yadav',
-        requesterVillage: 'Krishnapur',
-        productNeeded: 'Tractor Service',
-        quantity: 3,
-        unit: 'hour',
-        creditCost: 150,
-        urgencyLevel: 'high',
-        description: 'Need tractor urgently for ploughing before rain',
-        createdAt: DateTime.now().subtract(const Duration(hours: 2)),
-      ),
-      UrgentRequestModel(
-        id: 'urgent_002',
-        requesterId: 'farmer_004',
-        requesterName: 'Meena Sharma',
-        requesterVillage: 'Laxminagar',
-        productNeeded: 'Seeds',
-        quantity: 10,
-        unit: 'kg',
-        creditCost: 100,
-        urgencyLevel: 'medium',
-        description: 'Need paddy seeds for sowing season starting tomorrow',
-        createdAt: DateTime.now().subtract(const Duration(hours: 5)),
-      ),
-      UrgentRequestModel(
-        id: 'urgent_003',
-        requesterId: 'farmer_001',
-        requesterName: 'Rajesh Kumar',
-        requesterVillage: 'Sundarpur',
-        productNeeded: 'Transport Service',
-        quantity: 1,
-        unit: 'trip',
-        creditCost: 200,
-        urgencyLevel: 'high',
-        description: 'Need truck to transport harvest to mandi today',
-        createdAt: DateTime.now().subtract(const Duration(hours: 1)),
-      ),
-    ]);
-
-    // Run matching engine on seed data
-    _checkForTradeLoops();
-
-    // Persist all seed data to SQLite
-    for (final user in _users) {
-      await _firestore.saveUser(user);
-    }
-    for (final listing in _listings) {
-      await _firestore.saveListing(listing);
-    }
-    for (final trade in _trades) {
-      await _firestore.saveTrade(trade);
-    }
-
-    for (final req in _urgentRequests) {
-      await _firestore.saveUrgentRequest(req);
-    }
-
-    notifyListeners();
-  }
 }
