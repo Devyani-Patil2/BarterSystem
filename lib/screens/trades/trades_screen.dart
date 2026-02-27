@@ -6,6 +6,7 @@ import '../../config/theme.dart';
 import '../../config/constants.dart';
 import '../../providers/app_state.dart';
 import '../../models/trade_model.dart';
+import '../../widgets/translated_text.dart';
 
 class TradesScreen extends StatefulWidget {
   const TradesScreen({super.key});
@@ -69,7 +70,7 @@ class _TradesScreenState extends State<TradesScreen>
     return Scaffold(
       backgroundColor: isDark ? AppTheme.surfaceDark : AppTheme.surfaceLight,
       appBar: AppBar(
-        title: Text(
+        title: TranslatedText(
           'Trade Hub',
           style: GoogleFonts.outfit(fontWeight: FontWeight.w700),
         ),
@@ -99,18 +100,17 @@ class _TradesScreenState extends State<TradesScreen>
               ),
               indicatorSize: TabBarIndicatorSize.tab,
               labelColor: Colors.white,
-              unselectedLabelColor: isDark
-                  ? Colors.grey.shade400
-                  : Colors.grey.shade600,
+              unselectedLabelColor:
+                  isDark ? Colors.grey.shade400 : Colors.grey.shade600,
               labelStyle: GoogleFonts.inter(
                 fontWeight: FontWeight.w600,
                 fontSize: 13,
               ),
               dividerColor: Colors.transparent,
               tabs: [
-                Tab(text: 'Active (${activeTrades.length})'),
-                Tab(text: 'Pending (${pendingTrades.length})'),
-                Tab(text: 'History (${historyTrades.length})'),
+                Tab(child: TranslatedText('Active (${activeTrades.length})')),
+                Tab(child: TranslatedText('Pending (${pendingTrades.length})')),
+                Tab(child: TranslatedText('History (${historyTrades.length})')),
               ],
             ),
           ),
@@ -167,7 +167,7 @@ class _TradesScreenState extends State<TradesScreen>
               color: isDark ? Colors.grey.shade600 : Colors.grey.shade300,
             ),
             const SizedBox(height: 16),
-            Text(
+            TranslatedText(
               emptyTitle,
               style: GoogleFonts.outfit(
                 fontSize: 18,
@@ -175,7 +175,7 @@ class _TradesScreenState extends State<TradesScreen>
               ),
             ),
             const SizedBox(height: 8),
-            Text(
+            TranslatedText(
               emptySubtitle,
               style: GoogleFonts.inter(
                 fontSize: 14,
@@ -247,7 +247,7 @@ class _TradesScreenState extends State<TradesScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      TranslatedText(
                         '${trade.participants.length}-Party Trade Loop',
                         style: GoogleFonts.outfit(
                           fontSize: 16,
@@ -256,7 +256,7 @@ class _TradesScreenState extends State<TradesScreen>
                         ),
                       ),
                       const SizedBox(height: 2),
-                      Text(
+                      TranslatedText(
                         trade.participants
                             .map((p) => p.farmerName.split(' ').first)
                             .join(' → '),
@@ -280,7 +280,7 @@ class _TradesScreenState extends State<TradesScreen>
                     color: statusColor.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Text(
+                  child: TranslatedText(
                     trade.status.toUpperCase(),
                     style: GoogleFonts.inter(
                       fontSize: 10,
@@ -311,7 +311,7 @@ class _TradesScreenState extends State<TradesScreen>
                     color: isDark ? Colors.grey.shade800 : Colors.grey.shade100,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Text(
+                  child: TranslatedText(
                     '${AppConstants.productEmojis[p.offerProduct] ?? "📦"} ${p.offerProduct}',
                     style: GoogleFonts.inter(
                       fontSize: 11,
@@ -333,12 +333,11 @@ class _TradesScreenState extends State<TradesScreen>
                     Icon(
                       Icons.people_rounded,
                       size: 14,
-                      color: isDark
-                          ? Colors.grey.shade500
-                          : Colors.grey.shade400,
+                      color:
+                          isDark ? Colors.grey.shade500 : Colors.grey.shade400,
                     ),
                     const SizedBox(width: 4),
-                    Text(
+                    TranslatedText(
                       '$confirmedCount/${trade.participants.length} confirmed',
                       style: GoogleFonts.inter(
                         fontSize: 11,
@@ -386,8 +385,8 @@ class _TradesScreenState extends State<TradesScreen>
                     color: isActive
                         ? AppTheme.primaryGreen
                         : (isDark
-                              ? Colors.grey.shade700
-                              : Colors.grey.shade300),
+                            ? Colors.grey.shade700
+                            : Colors.grey.shade300),
                   ),
                 ),
               Container(
@@ -415,8 +414,8 @@ class _TradesScreenState extends State<TradesScreen>
                     color: idx < currentIdx
                         ? AppTheme.primaryGreen
                         : (isDark
-                              ? Colors.grey.shade700
-                              : Colors.grey.shade300),
+                            ? Colors.grey.shade700
+                            : Colors.grey.shade300),
                   ),
                 ),
             ],

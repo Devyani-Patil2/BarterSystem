@@ -8,6 +8,8 @@ import '../../config/theme.dart';
 import '../../config/constants.dart';
 import '../../providers/app_state.dart';
 import '../../models/trade_model.dart';
+import '../../widgets/translated_text.dart';
+
 
 class TradeDetailScreen extends StatelessWidget {
   final TradeModel trade;
@@ -22,7 +24,7 @@ class TradeDetailScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: isDark ? AppTheme.surfaceDark : AppTheme.surfaceLight,
       appBar: AppBar(
-        title: Text(
+        title: TranslatedText(
           'Trade Loop',
           style: GoogleFonts.outfit(fontWeight: FontWeight.w700),
         ),
@@ -55,7 +57,7 @@ class TradeDetailScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    Text(
+                    TranslatedText(
                       '${trade.participants.length}-Party Trade Loop',
                       style: GoogleFonts.outfit(
                         fontSize: 22,
@@ -75,7 +77,7 @@ class TradeDetailScreen extends StatelessWidget {
                         ).withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Text(
+                      child: TranslatedText(
                         trade.status.toUpperCase(),
                         style: GoogleFonts.inter(
                           fontSize: 12,
@@ -106,7 +108,7 @@ class TradeDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  TranslatedText(
                     'Trade Progress',
                     style: GoogleFonts.outfit(
                       fontSize: 18,
@@ -124,7 +126,7 @@ class TradeDetailScreen extends StatelessWidget {
             // Participants
             FadeInUp(
               delay: const Duration(milliseconds: 200),
-              child: Text(
+              child: TranslatedText(
                 'Participants',
                 style: GoogleFonts.outfit(
                   fontSize: 18,
@@ -183,7 +185,7 @@ class TradeDetailScreen extends StatelessWidget {
                               shape: BoxShape.circle,
                             ),
                             child: Center(
-                              child: Text(
+                              child: TranslatedText(
                                 p.farmerName[0],
                                 style: GoogleFonts.outfit(
                                   fontSize: 18,
@@ -200,7 +202,7 @@ class TradeDetailScreen extends StatelessWidget {
                               children: [
                                 Row(
                                   children: [
-                                    Text(
+                                    TranslatedText(
                                       p.farmerName,
                                       style: GoogleFonts.outfit(
                                         fontSize: 15,
@@ -221,7 +223,7 @@ class TradeDetailScreen extends StatelessWidget {
                                             6,
                                           ),
                                         ),
-                                        child: Text(
+                                        child: TranslatedText(
                                           'YOU',
                                           style: GoogleFonts.inter(
                                             fontSize: 9,
@@ -233,7 +235,7 @@ class TradeDetailScreen extends StatelessWidget {
                                     ],
                                   ],
                                 ),
-                                Text(
+                                TranslatedText(
                                   '₹${p.valuationAmount.toStringAsFixed(0)} value',
                                   style: GoogleFonts.inter(
                                     fontSize: 12,
@@ -287,7 +289,7 @@ class TradeDetailScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    TranslatedText(
                       'Credit Settlements',
                       style: GoogleFonts.outfit(
                         fontSize: 18,
@@ -323,7 +325,7 @@ class TradeDetailScreen extends StatelessWidget {
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child: Text(
+                              child: TranslatedText(
                                 cm.description,
                                 style: GoogleFonts.inter(
                                   fontSize: 12,
@@ -333,7 +335,7 @@ class TradeDetailScreen extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            Text(
+                            TranslatedText(
                               '₹${cm.amount.toStringAsFixed(0)}',
                               style: GoogleFonts.outfit(
                                 fontSize: 14,
@@ -368,14 +370,14 @@ class TradeDetailScreen extends StatelessWidget {
                           );
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Trade confirmed! ✅'),
+                              content: TranslatedText('Trade confirmed! ✅'),
                               backgroundColor: AppTheme.successGreen,
                             ),
                           );
                           Navigator.pop(context);
                         },
                         icon: const Icon(Icons.check_circle_outline),
-                        label: Text(
+                        label: TranslatedText(
                           'Confirm Trade',
                           style: GoogleFonts.outfit(
                             fontSize: 17,
@@ -404,7 +406,7 @@ class TradeDetailScreen extends StatelessWidget {
                           Navigator.pop(context);
                         },
                         icon: const Icon(Icons.cancel_outlined),
-                        label: Text(
+                        label: TranslatedText(
                           'Decline',
                           style: GoogleFonts.outfit(
                             fontSize: 15,
@@ -457,7 +459,7 @@ class TradeDetailScreen extends StatelessWidget {
                                 if (photo != null && ctx.mounted) {
                                   ScaffoldMessenger.of(ctx).showSnackBar(
                                     SnackBar(
-                                      content: Text(
+                                      content: TranslatedText(
                                         'Analyzing with AI... 📸',
                                         style: GoogleFonts.inter(),
                                       ),
@@ -496,7 +498,7 @@ class TradeDetailScreen extends StatelessWidget {
                                   if (ctx.mounted) {
                                     ScaffoldMessenger.of(ctx).showSnackBar(
                                       SnackBar(
-                                        content: Text(
+                                        content: TranslatedText(
                                           'Evidence uploaded! AI report generated. ✅',
                                           style: GoogleFonts.inter(),
                                         ),
@@ -507,7 +509,7 @@ class TradeDetailScreen extends StatelessWidget {
                                 }
                               },
                               icon: const Icon(Icons.camera_alt_rounded),
-                              label: Text(
+                              label: TranslatedText(
                                 'Upload Delivery Evidence 📸',
                                 style: GoogleFonts.outfit(
                                   fontSize: 16,
@@ -552,7 +554,7 @@ class TradeDetailScreen extends StatelessWidget {
                                     const Icon(Icons.smart_toy_rounded,
                                         color: AppTheme.primaryGreen, size: 20),
                                     const SizedBox(width: 8),
-                                    Text(
+                                    TranslatedText(
                                       'Your AI Quality Report',
                                       style: GoogleFonts.outfit(
                                         fontSize: 15,
@@ -568,7 +570,7 @@ class TradeDetailScreen extends StatelessWidget {
                                             .withValues(alpha: 0.15),
                                         borderRadius: BorderRadius.circular(10),
                                       ),
-                                      child: Text(
+                                      child: TranslatedText(
                                         myEvidence.conditionTag,
                                         style: GoogleFonts.inter(
                                           fontSize: 12,
@@ -583,9 +585,9 @@ class TradeDetailScreen extends StatelessWidget {
                                 // Overall Score
                                 Row(
                                   children: [
-                                    Text('Overall Score: ',
+                                    TranslatedText('Overall Score: ',
                                         style: GoogleFonts.inter(fontSize: 13)),
-                                    Text(
+                                    TranslatedText(
                                       '${myEvidence.aiQualityScore.toStringAsFixed(0)}%',
                                       style: GoogleFonts.outfit(
                                         fontSize: 18,
@@ -633,7 +635,7 @@ class TradeDetailScreen extends StatelessWidget {
                               ),
                               const SizedBox(width: 8),
                               Expanded(
-                                child: Text(
+                                child: TranslatedText(
                                   myEvidence == null
                                       ? 'Upload your evidence to proceed'
                                       : otherUploaded
@@ -660,7 +662,7 @@ class TradeDetailScreen extends StatelessWidget {
                             onPressed: () =>
                                 Navigator.pushNamed(context, '/disputes'),
                             icon: const Icon(Icons.gavel_rounded),
-                            label: Text(
+                            label: TranslatedText(
                               'File a Dispute',
                               style: GoogleFonts.outfit(
                                 fontSize: 15,
@@ -708,7 +710,7 @@ class TradeDetailScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            TranslatedText(
                               'Trade Completed!',
                               style: GoogleFonts.outfit(
                                 fontSize: 16,
@@ -716,7 +718,7 @@ class TradeDetailScreen extends StatelessWidget {
                                 color: AppTheme.successGreen,
                               ),
                             ),
-                            Text(
+                            TranslatedText(
                               'Credits have been settled for all participants',
                               style: GoogleFonts.inter(
                                 fontSize: 12,
@@ -748,7 +750,7 @@ class TradeDetailScreen extends StatelessWidget {
       children: [
         SizedBox(
           width: 110,
-          child: Text(
+          child: TranslatedText(
             label,
             style: GoogleFonts.inter(fontSize: 12, color: Colors.grey.shade600),
           ),
@@ -765,7 +767,7 @@ class TradeDetailScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        Text(
+        TranslatedText(
           '${score.toStringAsFixed(0)}%',
           style: GoogleFonts.inter(
             fontSize: 12,
@@ -847,7 +849,7 @@ class TradeDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 14),
                   Expanded(
-                    child: Text(
+                    child: TranslatedText(
                       step.$1,
                       style: GoogleFonts.outfit(
                         fontSize: 14,
@@ -878,7 +880,7 @@ class TradeDetailScreen extends StatelessWidget {
                         color: AppTheme.primaryGreen,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Text(
+                      child: TranslatedText(
                         'CURRENT',
                         style: GoogleFonts.inter(
                           fontSize: 9,
@@ -918,7 +920,7 @@ class TradeDetailScreen extends StatelessWidget {
       children: [
         Icon(icon, color: color, size: 18),
         const SizedBox(width: 4),
-        Text(
+        TranslatedText(
           status.toUpperCase(),
           style: GoogleFonts.inter(
             fontSize: 10,
@@ -941,10 +943,10 @@ class TradeDetailScreen extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 14)),
+            TranslatedText(emoji, style: const TextStyle(fontSize: 14)),
             const SizedBox(width: 4),
             Flexible(
-              child: Text(
+              child: TranslatedText(
                 label,
                 style: GoogleFonts.inter(
                   fontSize: 11,

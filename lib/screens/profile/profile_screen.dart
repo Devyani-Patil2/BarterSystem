@@ -7,6 +7,7 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 import '../../config/theme.dart';
 import '../../providers/app_state.dart';
 import '../../services/supply_chain_service.dart';
+import '../../widgets/translated_text.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -61,7 +62,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        Text(
+                        TranslatedText(
                           user?.name ?? 'Farmer',
                           style: GoogleFonts.outfit(
                             fontSize: 24,
@@ -69,7 +70,7 @@ class ProfileScreen extends StatelessWidget {
                             color: Colors.white,
                           ),
                         ),
-                        Text(
+                        TranslatedText(
                           '${user?.village ?? ''} • ${user?.phone ?? ''}',
                           style: GoogleFonts.inter(
                             fontSize: 13,
@@ -95,7 +96,7 @@ class ProfileScreen extends StatelessWidget {
                                 size: 14,
                               ),
                               const SizedBox(width: 4),
-                              Text(
+                              TranslatedText(
                                 'Phone Verified',
                                 style: GoogleFonts.inter(
                                   fontSize: 11,
@@ -145,7 +146,7 @@ class ProfileScreen extends StatelessWidget {
                                 size: 22,
                               ),
                               const SizedBox(width: 8),
-                              Text(
+                              TranslatedText(
                                 'Reputation Score',
                                 style: GoogleFonts.outfit(
                                   fontSize: 17,
@@ -254,7 +255,8 @@ class ProfileScreen extends StatelessWidget {
                   FadeInUp(
                     delay: const Duration(milliseconds: 150),
                     child: Container(
-                      padding: const EdgeInsets.all(14),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 8),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
@@ -273,42 +275,62 @@ class ProfileScreen extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'Language / भाषा',
+                                TranslatedText(
+                                  'App Language',
                                   style: GoogleFonts.outfit(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                                Text(
-                                  appState.locale.languageCode == 'en'
-                                      ? 'English'
-                                      : 'हिन्दी',
+                                TranslatedText(
+                                  'Select your preferred language',
                                   style: GoogleFonts.inter(
                                     fontSize: 11,
-                                    color: Colors.grey.shade600,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.color,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          ElevatedButton(
-                            onPressed: () => appState.toggleLocale(),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppTheme.primaryGreen,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 8),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            child: Text(
-                              appState.locale.languageCode == 'en'
-                                  ? 'हिन्दी में बदलें'
-                                  : 'Switch to English',
-                              style: GoogleFonts.inter(
-                                  fontSize: 11, fontWeight: FontWeight.w600),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                value: appState.currentLanguage,
+                                dropdownColor: Theme.of(context).cardColor,
+                                style: GoogleFonts.inter(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.color,
+                                ),
+                                icon: const Icon(Icons.arrow_drop_down,
+                                    color: AppTheme.primaryGreen),
+                                onChanged: (String? newValue) {
+                                  if (newValue != null) {
+                                    appState.setLanguage(newValue);
+                                  }
+                                },
+                                items: const [
+                                  DropdownMenuItem(
+                                      value: 'en-IN', child: Text('English')),
+                                  DropdownMenuItem(
+                                      value: 'hi-IN',
+                                      child: Text('हिन्दी (Hindi)')),
+                                  DropdownMenuItem(
+                                      value: 'mr-IN',
+                                      child: Text('मराठी (Marathi)')),
+                                ],
+                              ),
                             ),
                           ),
                         ],
@@ -424,7 +446,7 @@ class ProfileScreen extends StatelessWidget {
                               color: AppTheme.primaryGreen,
                               size: 22,
                             ),
-                            title: Text(
+                            title: TranslatedText(
                               'Dark Mode',
                               style: GoogleFonts.inter(
                                 fontSize: 14,
@@ -469,7 +491,7 @@ class ProfileScreen extends StatelessWidget {
                           }
                         },
                         icon: const Icon(Icons.logout_rounded, size: 20),
-                        label: Text(
+                        label: TranslatedText(
                           'Sign Out',
                           style: GoogleFonts.outfit(
                             fontSize: 15,
@@ -501,7 +523,7 @@ class ProfileScreen extends StatelessWidget {
       children: [
         Expanded(
           flex: 3,
-          child: Text(
+          child: TranslatedText(
             label,
             style: GoogleFonts.inter(fontSize: 11, color: Colors.grey.shade600),
           ),
@@ -544,7 +566,7 @@ class ProfileScreen extends StatelessWidget {
               color: color,
             ),
           ),
-          Text(
+          TranslatedText(
             label,
             style: GoogleFonts.inter(fontSize: 10, color: Colors.grey.shade500),
             textAlign: TextAlign.center,
@@ -563,7 +585,7 @@ class ProfileScreen extends StatelessWidget {
     return ListTile(
       onTap: onTap,
       leading: Icon(icon, color: AppTheme.primaryGreen, size: 22),
-      title: Text(
+      title: TranslatedText(
         label,
         style: GoogleFonts.inter(
           fontSize: 14,

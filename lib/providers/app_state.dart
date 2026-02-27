@@ -18,6 +18,7 @@ import '../services/mandi_price_service.dart';
 import '../services/quality_analysis_service.dart';
 import '../services/image_comparison_service.dart';
 import '../services/notification_service.dart';
+import '../services/translation_service.dart';
 import 'package:geolocator/geolocator.dart';
 
 /// Central application state using ChangeNotifier (Provider pattern).
@@ -44,6 +45,8 @@ class AppState extends ChangeNotifier {
 
   // Locale for multi-language
   Locale _locale = const Locale('en', 'IN');
+  String _currentLanguage = 'en-IN';
+  final _translationService = TranslationService();
 
   // Theme
   bool _isDarkMode = false;
@@ -60,6 +63,7 @@ class AppState extends ChangeNotifier {
   String? get verificationId => _verificationId;
   int get currentTabIndex => _currentTabIndex;
   Locale get locale => _locale;
+  String get currentLanguage => _currentLanguage;
   final _notifications = NotificationService.instance;
   bool get isDarkMode => _isDarkMode;
   String? get authError => _authError;
@@ -312,7 +316,12 @@ class AppState extends ChangeNotifier {
 
   Future<void> checkAuthState() async {
     final prefs = await SharedPreferences.getInstance();
+
+    // Initialize Translation Cache & Settings
+    await _translationService.init();
+    _currentLanguage = prefs.getString('app_language') ?? 'en-IN';
     _isDarkMode = prefs.getBool('isDarkMode') ?? false;
+
     final userId = prefs.getString('userId');
     if (userId != null) {
       // Try to load user from Firestore
@@ -367,12 +376,24 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Toggle between English and Hindi.
-  void toggleLocale() {
-    _locale = _locale.languageCode == 'en'
-        ? const Locale('hi', 'IN')
-        : const Locale('en', 'IN');
+  // â”€â”€â”€ MULTI-LANGUAGE (Sarvam AI) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+  /// Change the app's language and save preference
+  Future<void> setLanguage(String langCode) async {
+    if (_currentLanguage == langCode) return;
+    _currentLanguage = langCode;
+    // Notify all listeners to trigger a rebuild and re-translate the UI
     notifyListeners();
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('app_language', langCode);
+  }
+
+  /// Translate a string based on the current active language.
+  /// If language is 'en-IN', returns immediately.
+  Future<String> tr(String text) async {
+    if (_currentLanguage == 'en-IN' || text.isEmpty) return text;
+    return await _translationService.translate(text, _currentLanguage);
   }
 
   /// Calculate distance in km between current user and a listing.
@@ -1206,17 +1227,17 @@ class AppState extends ChangeNotifier {
       _executeTrade(tradeId);
     } else {
       // Significant mismatch → auto-create dispute
-      final respondent = e1.farmerId;  // sender (first uploader)
+      final respondent = e1.farmerId; // sender (first uploader)
       final respondentName = trade.participants
-          .firstWhere((p) => p.farmerId == respondent, orElse: () => trade.participants.last)
+          .firstWhere((p) => p.farmerId == respondent,
+              orElse: () => trade.participants.last)
           .farmerName;
 
       fileDispute(
         tradeId: tradeId,
         respondentId: respondent,
         respondentName: respondentName,
-        description:
-            'Auto-detected quality mismatch. '
+        description: 'Auto-detected quality mismatch. '
             'Sender reported: ${e1.conditionTag} (${e1.aiQualityScore.toStringAsFixed(0)}%). '
             'Receiver reported: ${e2.conditionTag} (${e2.aiQualityScore.toStringAsFixed(0)}%). '
             'Average score difference: ${avgDiff.toStringAsFixed(1)} points.',
@@ -1229,7 +1250,8 @@ class AppState extends ChangeNotifier {
         _firestore.updateTrade(_trades[idx]);
       }
 
-      _notifications.notifyDisputeResolved('Quality mismatch detected — dispute filed automatically');
+      _notifications.notifyDisputeResolved(
+          'Quality mismatch detected — dispute filed automatically');
       notifyListeners();
     }
   }
