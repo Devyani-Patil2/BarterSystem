@@ -7,6 +7,7 @@ import '../../config/constants.dart';
 import '../../providers/app_state.dart';
 import '../../models/listing_model.dart';
 import '../../widgets/translated_text.dart';
+import '../../widgets/voice_input_button.dart';
 
 class ListingsScreen extends StatefulWidget {
   const ListingsScreen({super.key});
@@ -19,6 +20,33 @@ class _ListingsScreenState extends State<ListingsScreen> {
   String _filterProduct = 'All';
   bool _isGridView = false;
   bool _sortByDistance = true; // Default: nearby first
+
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(() {
+      setState(() {
+        _searchQuery = _searchController.text.toLowerCase();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_searchController.text.isEmpty && _searchQuery.isNotEmpty) {
+      _searchController.text = _searchQuery;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +71,18 @@ class _ListingsScreenState extends State<ListingsScreen> {
           listings.where((l) => l.productType == _filterProduct).toList();
     }
 
+    if (_searchQuery.isNotEmpty) {
+      listings = listings.where((l) {
+        final productMatch = l.productType.toLowerCase().contains(_searchQuery);
+        final desiredMatch =
+            l.desiredProduct.toLowerCase().contains(_searchQuery);
+        final farmerMatch = l.farmerName.toLowerCase().contains(_searchQuery);
+        final villageMatch =
+            l.farmerVillage.toLowerCase().contains(_searchQuery);
+        return productMatch || desiredMatch || farmerMatch || villageMatch;
+      }).toList();
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Marketplace',
@@ -59,10 +99,6 @@ class _ListingsScreenState extends State<ListingsScreen> {
             onPressed: () => setState(() => _isGridView = !_isGridView),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(context, '/create-listing'),
-        child: const Icon(Icons.add),
       ),
       body: Column(
         children: [
@@ -95,6 +131,43 @@ class _ListingsScreenState extends State<ListingsScreen> {
                 ),
               ),
             ),
+
+          // Voice Search Bar
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Search or use voice... (e.g., Wheat)',
+                hintStyle: GoogleFonts.inter(
+                    color: Colors.grey.shade400, fontSize: 14),
+                prefixIcon:
+                    const Icon(Icons.search, color: AppTheme.primaryGreen),
+                suffixIcon: VoiceInputButton(
+                  color: AppTheme.primaryGreen,
+                  onTextRecognized: (spokenText) {
+                    _searchController.text = spokenText;
+                  },
+                ),
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey.shade300),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey.shade300),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: AppTheme.primaryGreen),
+                ),
+              ),
+            ),
+          ),
 
           // Filters
           SizedBox(

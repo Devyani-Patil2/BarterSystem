@@ -21,8 +21,8 @@ class SupplyChainService {
       final flow = trade.participants
           .map((p) => '${p.farmerName}(${p.offerProduct})')
           .join(' → ');
-      final totalValue = trade.creditMovements
-          .fold<double>(0, (sum, m) => sum + m.amount);
+      final totalValue =
+          trade.creditMovements.fold<double>(0, (sum, m) => sum + m.amount);
       buffer.writeln(
           '${trade.loopId},${trade.status},${trade.createdAt.toIso8601String()},"$flow",${trade.participants.length},${totalValue.toStringAsFixed(0)}');
     }
@@ -78,10 +78,8 @@ class SupplyChainService {
       },
       'summary': {
         'totalTrades': trades.length,
-        'completedTrades':
-            trades.where((t) => t.status == 'completed').length,
-        'activeListings':
-            listings.where((l) => l.status == 'active').length,
+        'completedTrades': trades.where((t) => t.status == 'completed').length,
+        'activeListings': listings.where((l) => l.status == 'active').length,
         'totalTransactions': transactions.length,
       },
       'trades': trades
@@ -90,7 +88,8 @@ class SupplyChainService {
                 'status': t.status,
                 'createdAt': t.createdAt.toIso8601String(),
                 'participants': t.participants.map((p) => p.toMap()).toList(),
-                'creditMovements': t.creditMovements.map((c) => c.toMap()).toList(),
+                'creditMovements':
+                    t.creditMovements.map((c) => c.toMap()).toList(),
               })
           .toList(),
       'listings': listings

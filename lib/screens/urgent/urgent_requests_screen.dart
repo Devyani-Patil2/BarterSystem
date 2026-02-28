@@ -34,7 +34,6 @@ class _UrgentRequestsScreenState extends State<UrgentRequestsScreen>
     final appState = context.watch<AppState>();
 
     return Scaffold(
-      
       appBar: AppBar(
         title: Text('Urgent Requests',
             style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
@@ -47,7 +46,8 @@ class _UrgentRequestsScreenState extends State<UrgentRequestsScreen>
           indicatorColor: AppTheme.primaryGreen,
           labelColor: AppTheme.primaryGreen,
           unselectedLabelColor: Colors.grey.shade500,
-          labelStyle: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13),
+          labelStyle:
+              GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13),
           tabs: const [
             Tab(text: '🆘 Open Requests'),
             Tab(text: '📋 My Requests'),
@@ -86,12 +86,14 @@ class _UrgentRequestsScreenState extends State<UrgentRequestsScreen>
             const SizedBox(height: 12),
             Text(
               'No urgent requests right now',
-              style: GoogleFonts.outfit(fontSize: 16, color: Colors.grey.shade500),
+              style:
+                  GoogleFonts.outfit(fontSize: 16, color: Colors.grey.shade500),
             ),
             const SizedBox(height: 6),
             Text(
               'Help a fellow farmer when requests appear!',
-              style: GoogleFonts.inter(fontSize: 13, color: Colors.grey.shade400),
+              style:
+                  GoogleFonts.inter(fontSize: 13, color: Colors.grey.shade400),
             ),
           ],
         ),
@@ -123,12 +125,14 @@ class _UrgentRequestsScreenState extends State<UrgentRequestsScreen>
             const SizedBox(height: 12),
             Text(
               'No requests posted yet',
-              style: GoogleFonts.outfit(fontSize: 16, color: Colors.grey.shade500),
+              style:
+                  GoogleFonts.outfit(fontSize: 16, color: Colors.grey.shade500),
             ),
             const SizedBox(height: 6),
             Text(
               'Post a request when you urgently need something',
-              style: GoogleFonts.inter(fontSize: 13, color: Colors.grey.shade400),
+              style:
+                  GoogleFonts.inter(fontSize: 13, color: Colors.grey.shade400),
             ),
           ],
         ),
@@ -234,7 +238,8 @@ class _UrgentRequestsScreenState extends State<UrgentRequestsScreen>
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
                       color: urgencyColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
@@ -245,7 +250,8 @@ class _UrgentRequestsScreenState extends State<UrgentRequestsScreen>
                         if (req.urgencyLevel == 'high')
                           Icon(Icons.warning_amber_rounded,
                               size: 12, color: urgencyColor),
-                        if (req.urgencyLevel == 'high') const SizedBox(width: 3),
+                        if (req.urgencyLevel == 'high')
+                          const SizedBox(width: 3),
                         Text(
                           req.urgencyLevel.toUpperCase(),
                           style: GoogleFonts.inter(
@@ -291,7 +297,8 @@ class _UrgentRequestsScreenState extends State<UrgentRequestsScreen>
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
                   gradient: AppTheme.primaryGradient,
                   borderRadius: BorderRadius.circular(10),
@@ -380,9 +387,11 @@ class _UrgentRequestsScreenState extends State<UrgentRequestsScreen>
                 ),
               if (!isOpen)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    color: AppTheme.statusColor(req.status).withValues(alpha: 0.1),
+                    color:
+                        AppTheme.statusColor(req.status).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
@@ -449,7 +458,8 @@ class _UrgentRequestsScreenState extends State<UrgentRequestsScreen>
           children: [
             Text(
               '${req.requesterName} needs:',
-              style: GoogleFonts.inter(fontSize: 14, color: Colors.grey.shade700),
+              style:
+                  GoogleFonts.inter(fontSize: 14, color: Colors.grey.shade700),
             ),
             const SizedBox(height: 8),
             Container(
@@ -574,8 +584,7 @@ class _UrgentRequestsScreenState extends State<UrgentRequestsScreen>
                 padding: const EdgeInsets.all(24),
                 decoration: const BoxDecoration(
                   color: Colors.white,
-                  borderRadius:
-                      BorderRadius.vertical(top: Radius.circular(24)),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
                 ),
                 child: SingleChildScrollView(
                   child: Column(
@@ -616,7 +625,8 @@ class _UrgentRequestsScreenState extends State<UrgentRequestsScreen>
                       GridView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
                           crossAxisSpacing: 12,
                           mainAxisSpacing: 12,
@@ -626,24 +636,32 @@ class _UrgentRequestsScreenState extends State<UrgentRequestsScreen>
                         itemBuilder: (context, index) {
                           final product = AppConstants.productCategories[index];
                           final isSelected = selectedProduct == product;
-                          final emoji = AppConstants.productEmojis[product] ?? '📦';
+                          final emoji =
+                              AppConstants.productEmojis[product] ?? '📦';
 
                           return GestureDetector(
-                            onTap: () => setModalState(() => selectedProduct = product),
+                            onTap: () =>
+                                setModalState(() => selectedProduct = product),
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 200),
-                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
                               decoration: BoxDecoration(
-                                color: isSelected ? AppTheme.errorRed : Colors.white,
+                                color: isSelected
+                                    ? AppTheme.errorRed
+                                    : Colors.white,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: isSelected ? AppTheme.errorRed : Colors.grey.shade300,
+                                  color: isSelected
+                                      ? AppTheme.errorRed
+                                      : Colors.grey.shade300,
                                   width: isSelected ? 2 : 1,
                                 ),
                                 boxShadow: isSelected
                                     ? [
                                         BoxShadow(
-                                          color: AppTheme.errorRed.withValues(alpha: 0.3),
+                                          color: AppTheme.errorRed
+                                              .withValues(alpha: 0.3),
                                           blurRadius: 8,
                                           offset: const Offset(0, 2),
                                         ),
@@ -653,7 +671,8 @@ class _UrgentRequestsScreenState extends State<UrgentRequestsScreen>
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(emoji, style: const TextStyle(fontSize: 18)),
+                                  Text(emoji,
+                                      style: const TextStyle(fontSize: 18)),
                                   const SizedBox(width: 8),
                                   Flexible(
                                     child: Text(
@@ -662,7 +681,9 @@ class _UrgentRequestsScreenState extends State<UrgentRequestsScreen>
                                       style: GoogleFonts.inter(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600,
-                                        color: isSelected ? Colors.white : Colors.grey.shade700,
+                                        color: isSelected
+                                            ? Colors.white
+                                            : Colors.grey.shade700,
                                       ),
                                     ),
                                   ),
@@ -822,45 +843,46 @@ class _UrgentRequestsScreenState extends State<UrgentRequestsScreen>
                         height: 52,
                         child: ElevatedButton(
                           onPressed: () {
-                                  if (selectedProduct == null || qtyController.text.isEmpty || creditCost <= 0) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Please select a product and enter the quantity first!'),
-                                        backgroundColor: AppTheme.warningOrange,
-                                      ),
-                                    );
-                                    return;
-                                  }
-                                  final appState = context.read<AppState>();
-                                  if ((appState.currentUser?.creditBalance ??
-                                          0) <
-                                      creditCost) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content:
-                                            Text('Not enough credits! ❌'),
-                                        backgroundColor: AppTheme.errorRed,
-                                      ),
-                                    );
-                                    return;
-                                  }
-                                  appState.postUrgentRequest(
-                                    productNeeded: selectedProduct!,
-                                    quantity: double.parse(qtyController.text),
-                                    unit: selectedUnit,
-                                    creditCost: creditCost,
-                                    urgencyLevel: urgency,
-                                    description: descController.text,
-                                  );
-                                  Navigator.pop(context);
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                          'Request posted! Waiting for a farmer to fulfill 🙏'),
-                                      backgroundColor: AppTheme.primaryGreen,
-                                    ),
-                                  );
-                                },
+                            if (selectedProduct == null ||
+                                qtyController.text.isEmpty ||
+                                creditCost <= 0) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      'Please select a product and enter the quantity first!'),
+                                  backgroundColor: AppTheme.warningOrange,
+                                ),
+                              );
+                              return;
+                            }
+                            final appState = context.read<AppState>();
+                            if ((appState.currentUser?.creditBalance ?? 0) <
+                                creditCost) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Not enough credits! ❌'),
+                                  backgroundColor: AppTheme.errorRed,
+                                ),
+                              );
+                              return;
+                            }
+                            appState.postUrgentRequest(
+                              productNeeded: selectedProduct!,
+                              quantity: double.parse(qtyController.text),
+                              unit: selectedUnit,
+                              creditCost: creditCost,
+                              urgencyLevel: urgency,
+                              description: descController.text,
+                            );
+                            Navigator.pop(context);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                    'Request posted! Waiting for a farmer to fulfill 🙏'),
+                                backgroundColor: AppTheme.primaryGreen,
+                              ),
+                            );
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.errorRed,
                             foregroundColor: Colors.white,

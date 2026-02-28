@@ -4,11 +4,11 @@ import 'package:image/image.dart' as img;
 
 /// Item categories that the AI can detect from pixel analysis.
 enum ItemCategory {
-  crop,       // Green produce: vegetables, fruits, leafy greens
-  grain,      // Grains/seeds: wheat, rice, pulses — yellowish/brown, small uniform
-  equipment,  // Tools/machinery: metallic grey/blue, hard edges, low saturation
-  livestock,  // Animals: varied brown/white, high contrast, organic shapes
-  general,    // Fallback for unrecognized items
+  crop, // Green produce: vegetables, fruits, leafy greens
+  grain, // Grains/seeds: wheat, rice, pulses — yellowish/brown, small uniform
+  equipment, // Tools/machinery: metallic grey/blue, hard edges, low saturation
+  livestock, // Animals: varied brown/white, high contrast, organic shapes
+  general, // Fallback for unrecognized items
 }
 
 /// Category-specific label set for the 4 score dimensions.
@@ -182,8 +182,8 @@ class QualityAnalysisService {
     int greenPixels = 0;
     int brownPixels = 0;
     int yellowPixels = 0;
-    int greyPixels = 0;     // metallic/grey tones
-    int bluePixels = 0;     // metallic blue
+    int greyPixels = 0; // metallic/grey tones
+    int bluePixels = 0; // metallic blue
     int whitePixels = 0;
     int uniformPixels = 0;
     int highContrastPixels = 0;
@@ -235,8 +235,10 @@ class QualityAnalysisService {
         if (brightness > 220) whitePixels++;
         if (g > r * 1.2 && g > b * 1.2) greenPixels++;
         if (r > g * 1.3 && r > b * 1.2 && brightness < 150) brownPixels++;
-        if (r > g * 0.9 && r < g * 1.4 && g > b * 1.3 && brightness > 100) yellowPixels++;
-        if (saturation < 0.15 && brightness > 80 && brightness < 200) greyPixels++;
+        if (r > g * 0.9 && r < g * 1.4 && g > b * 1.3 && brightness > 100)
+          yellowPixels++;
+        if (saturation < 0.15 && brightness > 80 && brightness < 200)
+          greyPixels++;
         if (b > r * 1.2 && b > g * 1.1) bluePixels++;
 
         // Uniformity
@@ -315,7 +317,10 @@ class QualityAnalysisService {
       return ItemCategory.grain;
     }
     // Average hue in yellow range (30-60°) with low green
-    if (d.avgHue > 25 && d.avgHue < 65 && d.avgSaturation > 0.2 && d.greenRatio < 0.1) {
+    if (d.avgHue > 25 &&
+        d.avgHue < 65 &&
+        d.avgSaturation > 0.2 &&
+        d.greenRatio < 0.1) {
       return ItemCategory.grain;
     }
 
@@ -447,7 +452,8 @@ class QualityAnalysisService {
   double _scoreCropColor(_PixelData d) {
     double s = 40.0;
     s += d.avgSaturation * 60;
-    final normVar = d.brightnessVariance < 5000 ? d.brightnessVariance / 5000 : 1.0;
+    final normVar =
+        d.brightnessVariance < 5000 ? d.brightnessVariance / 5000 : 1.0;
     s += (1 - normVar) * 20;
     s += d.greenRatio * 20;
     s -= d.brownRatio * 30;
@@ -489,7 +495,8 @@ class QualityAnalysisService {
     // Consistent color across the grain batch
     double s = 50.0;
     s += d.uniformityRatio * 50;
-    final normVar = d.brightnessVariance < 5000 ? d.brightnessVariance / 5000 : 1.0;
+    final normVar =
+        d.brightnessVariance < 5000 ? d.brightnessVariance / 5000 : 1.0;
     s += (1 - normVar) * 30;
     s -= (d.darkRatio + d.whiteRatio) * 20; // Extremes = inconsistent
     return s.clamp(10, 100);
@@ -500,7 +507,9 @@ class QualityAnalysisService {
     double s = 60.0;
     s += d.uniformityRatio * 30;
     s += d.avgBrightness > 80 ? 15 : 0;
-    s -= (d.edgeRatio > 0.3 ? (d.edgeRatio - 0.3) * 50 : 0); // Too many edges = varied sizes
+    s -= (d.edgeRatio > 0.3
+        ? (d.edgeRatio - 0.3) * 50
+        : 0); // Too many edges = varied sizes
     s += d.avgSaturation > 0.15 ? 10 : 0;
     return s.clamp(10, 100);
   }
@@ -534,7 +543,8 @@ class QualityAnalysisService {
     s += d.uniformityRatio * 40;
     s += d.avgBrightness > 100 ? 15 : 0; // Shiny surface
     s -= d.darkRatio * 50; // Pitting/damage
-    final normVar = d.brightnessVariance < 5000 ? d.brightnessVariance / 5000 : 1.0;
+    final normVar =
+        d.brightnessVariance < 5000 ? d.brightnessVariance / 5000 : 1.0;
     s += (1 - normVar) * 20;
     return s.clamp(10, 100);
   }

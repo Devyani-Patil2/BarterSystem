@@ -6,7 +6,6 @@ import '../../config/theme.dart';
 import '../../providers/app_state.dart';
 import '../../widgets/translated_text.dart';
 
-
 class CreditHistoryScreen extends StatelessWidget {
   const CreditHistoryScreen({super.key});
 
@@ -19,7 +18,6 @@ class CreditHistoryScreen extends StatelessWidget {
     final balance = appState.currentUser?.creditBalance ?? 0;
 
     return Scaffold(
-      
       appBar: AppBar(
         title: TranslatedText('Credit History',
             style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),

@@ -9,7 +9,6 @@ import '../../providers/app_state.dart';
 import '../../models/listing_model.dart';
 import '../../widgets/translated_text.dart';
 
-
 class CreateListingScreen extends StatefulWidget {
   const CreateListingScreen({super.key});
 
@@ -69,7 +68,8 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: TranslatedText('Listing created! Looking for trade matches... 🔄'),
+        content:
+            TranslatedText('Listing created! Looking for trade matches... 🔄'),
         backgroundColor: AppTheme.successGreen,
       ),
     );
@@ -85,7 +85,6 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       appBar: AppBar(
         title: TranslatedText(
           'Create Listing',
@@ -135,15 +134,18 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                       child: TextFormField(
                         controller: _quantityController,
                         keyboardType: TextInputType.number,
-                        style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w500),
+                        style: GoogleFonts.inter(
+                            fontSize: 16, fontWeight: FontWeight.w500),
                         decoration: InputDecoration(
                           hintText: 'Enter quantity',
-                          prefixIcon: Icon(Icons.scale, color: Colors.grey.shade500),
+                          prefixIcon:
+                              Icon(Icons.scale, color: Colors.grey.shade500),
                         ),
                         onChanged: (_) => _updateValuation(),
                         validator: (v) {
                           if (v == null || v.isEmpty) return 'Required';
-                          if (double.tryParse(v) == null) return 'Invalid number';
+                          if (double.tryParse(v) == null)
+                            return 'Invalid number';
                           return null;
                         },
                       ),
@@ -154,7 +156,8 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                         initialValue: _selectedUnit,
                         decoration: const InputDecoration(),
                         items: AppConstants.units
-                            .map((u) => DropdownMenuItem(value: u, child: TranslatedText(u)))
+                            .map((u) => DropdownMenuItem(
+                                value: u, child: TranslatedText(u)))
                             .toList(),
                         onChanged: (v) => setState(() => _selectedUnit = v!),
                       ),
@@ -331,9 +334,8 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     required Function(String) onSelect,
     String? exclude,
   }) {
-    final products = AppConstants.productCategories
-        .where((p) => p != exclude)
-        .toList();
+    final products =
+        AppConstants.productCategories.where((p) => p != exclude).toList();
 
     return GridView.builder(
       shrinkWrap: true,
@@ -359,7 +361,8 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
               color: isSelected ? AppTheme.primaryGreen : Colors.white,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isSelected ? AppTheme.primaryGreen : Colors.grey.shade300,
+                color:
+                    isSelected ? AppTheme.primaryGreen : Colors.grey.shade300,
                 width: isSelected ? 2 : 1,
               ),
               boxShadow: isSelected

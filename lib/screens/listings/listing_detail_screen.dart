@@ -6,8 +6,8 @@ import '../../config/theme.dart';
 import '../../config/constants.dart';
 import '../../models/listing_model.dart';
 import '../../providers/app_state.dart';
+import '../../services/voice_service.dart';
 import '../../widgets/translated_text.dart';
-
 
 class ListingDetailScreen extends StatelessWidget {
   final ListingModel listing;
@@ -57,14 +57,30 @@ class ListingDetailScreen extends StatelessWidget {
     final myTradeListing = myMatchingListing ?? myBestListing;
 
     return Scaffold(
-      
       appBar: AppBar(
         title: TranslatedText(listing.productType,
             style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            VoiceService.instance.stopSpeaking();
+            Navigator.pop(context);
+          },
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.volume_up_rounded,
+                color: AppTheme.primaryGreen),
+            tooltip: 'Read listing aloud',
+            onPressed: () {
+              final summary =
+                  'Farmer ${listing.farmerName} from ${listing.farmerVillage} is offering ${listing.quantity} ${listing.unit} of ${listing.productType}. They want ${listing.desiredProduct} in exchange. Expected quality is ${listing.qualityExpectation}.';
+              VoiceService.instance
+                  .speak(summary, localeId: appState.currentLanguage);
+            },
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -514,7 +530,8 @@ class ListingDetailScreen extends StatelessWidget {
             // Fairness indicator
             Row(
               children: [
-                TranslatedText('Fairness: ', style: GoogleFonts.inter(fontSize: 13)),
+                TranslatedText('Fairness: ',
+                    style: GoogleFonts.inter(fontSize: 13)),
                 TranslatedText(
                   '${fairness.toStringAsFixed(0)}%',
                   style: GoogleFonts.outfit(

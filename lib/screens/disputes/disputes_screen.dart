@@ -14,9 +14,9 @@ class DisputesScreen extends StatelessWidget {
     final disputes = appState.disputes;
 
     return Scaffold(
-      
       appBar: AppBar(
-        title: Text('Dispute Center', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        title: Text('Dispute Center',
+            style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () => Navigator.pop(context),
@@ -25,7 +25,8 @@ class DisputesScreen extends StatelessWidget {
           TextButton.icon(
             onPressed: () => _showFileDisputeDialog(context),
             icon: const Icon(Icons.add_circle_outline, size: 18),
-            label: Text('File', style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+            label: Text('File',
+                style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
           ),
         ],
       ),
@@ -34,16 +35,19 @@ class DisputesScreen extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.shield_outlined, size: 64, color: Colors.grey.shade300),
+                  Icon(Icons.shield_outlined,
+                      size: 64, color: Colors.grey.shade300),
                   const SizedBox(height: 16),
                   Text(
                     'No disputes',
-                    style: GoogleFonts.outfit(fontSize: 18, color: Colors.grey.shade500),
+                    style: GoogleFonts.outfit(
+                        fontSize: 18, color: Colors.grey.shade500),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'All trades are clean! 🎉',
-                    style: GoogleFonts.inter(fontSize: 14, color: Colors.grey.shade400),
+                    style: GoogleFonts.inter(
+                        fontSize: 14, color: Colors.grey.shade400),
                   ),
                 ],
               ),
@@ -136,7 +140,8 @@ class DisputesScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppTheme.statusColor(dispute.status).withValues(alpha: 0.1),
+                  color: AppTheme.statusColor(dispute.status)
+                      .withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -154,7 +159,8 @@ class DisputesScreen extends StatelessWidget {
           if (dispute.description.isNotEmpty)
             Text(
               dispute.description,
-              style: GoogleFonts.inter(fontSize: 13, color: Colors.grey.shade700),
+              style:
+                  GoogleFonts.inter(fontSize: 13, color: Colors.grey.shade700),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -168,7 +174,8 @@ class DisputesScreen extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(Icons.smart_toy_outlined, size: 18, color: AppTheme.skyBlue),
+                const Icon(Icons.smart_toy_outlined,
+                    size: 18, color: AppTheme.skyBlue),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Column(
@@ -212,7 +219,8 @@ class DisputesScreen extends StatelessWidget {
               child: ElevatedButton.icon(
                 onPressed: () {
                   final appState = context.read<AppState>();
-                  appState.resolveDispute(dispute.id, 'Resolved via AI Verdict: ${dispute.aiVerdict.replaceAll('_', ' ').toUpperCase()}');
+                  appState.resolveDispute(dispute.id,
+                      'Resolved via AI Verdict: ${dispute.aiVerdict.replaceAll('_', ' ').toUpperCase()}');
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Dispute successfully resolved! ✨'),
@@ -223,12 +231,14 @@ class DisputesScreen extends StatelessWidget {
                 icon: const Icon(Icons.check_circle_outline, size: 18),
                 label: Text(
                   'Accept Verdict & Resolve',
-                  style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w600),
+                  style: GoogleFonts.outfit(
+                      fontSize: 14, fontWeight: FontWeight.w600),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primaryGreen,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
                   elevation: 0,
                 ),
               ),
@@ -241,7 +251,8 @@ class DisputesScreen extends StatelessWidget {
 
   void _showFileDisputeDialog(BuildContext context) {
     final appState = context.read<AppState>();
-    final completedTrades = appState.trades.where((t) => t.status == 'completed').toList();
+    final completedTrades =
+        appState.trades.where((t) => t.status == 'completed').toList();
     final descriptionController = TextEditingController();
 
     showModalBottomSheet(
@@ -289,7 +300,8 @@ class DisputesScreen extends StatelessWidget {
               else ...[
                 Text(
                   'Select a completed trade:',
-                  style: GoogleFonts.inter(fontSize: 14, color: Colors.grey.shade700),
+                  style: GoogleFonts.inter(
+                      fontSize: 14, color: Colors.grey.shade700),
                 ),
                 const SizedBox(height: 12),
                 ...completedTrades.take(5).map((trade) {
@@ -302,14 +314,17 @@ class DisputesScreen extends StatelessWidget {
                         color: AppTheme.primaryGreen.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Icon(Icons.sync, color: AppTheme.primaryGreen),
+                      child:
+                          const Icon(Icons.sync, color: AppTheme.primaryGreen),
                     ),
                     title: Text(
                       '${trade.participants.length}-Party Loop',
                       style: GoogleFonts.outfit(fontWeight: FontWeight.w600),
                     ),
                     subtitle: Text(
-                      trade.participants.map((p) => p.farmerName.split(' ').first).join(' → '),
+                      trade.participants
+                          .map((p) => p.farmerName.split(' ').first)
+                          .join(' → '),
                       style: GoogleFonts.inter(fontSize: 12),
                     ),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),
@@ -320,7 +335,8 @@ class DisputesScreen extends StatelessWidget {
                   );
                 }),
               ],
-              SizedBox(height: MediaQuery.of(sheetContext).viewInsets.bottom + 20),
+              SizedBox(
+                  height: MediaQuery.of(sheetContext).viewInsets.bottom + 20),
             ],
           ),
         );
@@ -328,14 +344,16 @@ class DisputesScreen extends StatelessWidget {
     );
   }
 
-  void _showDisputeForm(BuildContext context, trade, TextEditingController controller) {
+  void _showDisputeForm(
+      BuildContext context, trade, TextEditingController controller) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (formContext) {
         return Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(formContext).viewInsets.bottom),
+          padding: EdgeInsets.only(
+              bottom: MediaQuery.of(formContext).viewInsets.bottom),
           child: Container(
             padding: const EdgeInsets.all(24),
             decoration: const BoxDecoration(
@@ -348,7 +366,8 @@ class DisputesScreen extends StatelessWidget {
               children: [
                 Text(
                   'Describe the Issue',
-                  style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.outfit(
+                      fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
                 TextField(
@@ -368,7 +387,8 @@ class DisputesScreen extends StatelessWidget {
                       if (controller.text.trim().isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Please describe the issue first! ✍️'),
+                            content:
+                                Text('Please describe the issue first! ✍️'),
                             backgroundColor: AppTheme.warningOrange,
                           ),
                         );
@@ -381,23 +401,24 @@ class DisputesScreen extends StatelessWidget {
                           (p) => p.farmerId != appState.currentUser?.id,
                           orElse: () => trade.participants.first,
                         );
-                        
+
                         appState.fileDispute(
                           tradeId: trade.loopId,
                           respondentId: respondent.farmerId,
                           respondentName: respondent.farmerName,
                           description: controller.text.trim(),
                         );
-                        
+
                         Navigator.pop(formContext);
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Dispute SUBMITTED! AI has analyzed your request. 🤖'),
+                            content: Text(
+                                'Dispute SUBMITTED! AI has analyzed your request. 🤖'),
                             backgroundColor: AppTheme.primaryGreen,
                           ),
                         );
                       } catch (e) {
-                         ScaffoldMessenger.of(context).showSnackBar(
+                        ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text('Error submitting dispute: $e'),
                             backgroundColor: AppTheme.errorRed,
@@ -408,12 +429,14 @@ class DisputesScreen extends StatelessWidget {
                     icon: const Icon(Icons.gavel_rounded, size: 20),
                     label: Text(
                       'Submit Dispute',
-                      style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w600),
+                      style: GoogleFonts.outfit(
+                          fontSize: 16, fontWeight: FontWeight.w600),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.warningOrange,
                       foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14)),
                     ),
                   ),
                 ),

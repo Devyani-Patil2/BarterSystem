@@ -8,7 +8,8 @@ class UserModel {
   final double reputationScore;
   final double creditBalance;
   final double frozenCredits;
-  final String verificationStatus; // 'unverified', 'phone_verified', 'aadhaar_verified'
+  final String
+      verificationStatus; // 'unverified', 'phone_verified', 'aadhaar_verified'
   final String? profileImageUrl;
   final int totalTrades;
   final int disputeCount;

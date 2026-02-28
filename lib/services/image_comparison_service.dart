@@ -12,14 +12,17 @@ class ImageComparisonService {
 
   /// Compare two images and return a real similarity score (0–100).
   /// Higher = more similar (complaint photo matches delivery photo).
-  Future<Map<String, dynamic>> compareImages(
-      File image1, File image2) async {
+  Future<Map<String, dynamic>> compareImages(File image1, File image2) async {
     try {
       final bytes1 = await image1.readAsBytes();
       final bytes2 = await image2.readAsBytes();
       return compareImageBytes(bytes1, bytes2);
     } catch (e) {
-      return {'similarity': 50.0, 'method': 'error', 'verdict': 'manual_review'};
+      return {
+        'similarity': 50.0,
+        'method': 'error',
+        'verdict': 'manual_review'
+      };
     }
   }
 
@@ -29,13 +32,19 @@ class ImageComparisonService {
       var img1 = img.decodeImage(bytes1);
       var img2 = img.decodeImage(bytes2);
       if (img1 == null || img2 == null) {
-        return {'similarity': 50.0, 'method': 'decode_error', 'verdict': 'manual_review'};
+        return {
+          'similarity': 50.0,
+          'method': 'decode_error',
+          'verdict': 'manual_review'
+        };
       }
 
       // Resize both to same dimensions for fair comparison
       const compareSize = 100;
-      final resized1 = img.copyResize(img1, width: compareSize, height: compareSize);
-      final resized2 = img.copyResize(img2, width: compareSize, height: compareSize);
+      final resized1 =
+          img.copyResize(img1, width: compareSize, height: compareSize);
+      final resized2 =
+          img.copyResize(img2, width: compareSize, height: compareSize);
 
       // Method 1: Histogram comparison
       final histSimilarity = _compareHistograms(resized1, resized2);
@@ -76,13 +85,18 @@ class ImageComparisonService {
         'similarity': double.parse(similarity.toStringAsFixed(1)),
         'histogramSimilarity': double.parse(histSimilarity.toStringAsFixed(1)),
         'pixelSimilarity': double.parse(pixelSimilarity.toStringAsFixed(1)),
-        'structuralSimilarity': double.parse(structSimilarity.toStringAsFixed(1)),
+        'structuralSimilarity':
+            double.parse(structSimilarity.toStringAsFixed(1)),
         'verdict': verdict,
         'refundAmount': refundAmount,
         'method': 'multi_metric',
       };
     } catch (e) {
-      return {'similarity': 50.0, 'method': 'error', 'verdict': 'manual_review'};
+      return {
+        'similarity': 50.0,
+        'method': 'error',
+        'verdict': 'manual_review'
+      };
     }
   }
 
@@ -169,9 +183,11 @@ class ImageComparisonService {
         final p1 = img1.getPixel(x, y);
         final p2 = img2.getPixel(x, y);
 
-        lum1.add(0.299 * p1.r.toDouble() + 0.587 * p1.g.toDouble() +
+        lum1.add(0.299 * p1.r.toDouble() +
+            0.587 * p1.g.toDouble() +
             0.114 * p1.b.toDouble());
-        lum2.add(0.299 * p2.r.toDouble() + 0.587 * p2.g.toDouble() +
+        lum2.add(0.299 * p2.r.toDouble() +
+            0.587 * p2.g.toDouble() +
             0.114 * p2.b.toDouble());
       }
     }

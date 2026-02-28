@@ -81,27 +81,42 @@ class DatabaseHelper {
 
   Future<void> _saveUsers() async {
     final prefs = await SharedPreferences.getInstance();
-    final list = _users.map((u) => jsonEncode({
-      'id': u.id, 'phone': u.phone, 'name': u.name,
-      'village': u.village, 'latitude': u.latitude,
-      'longitude': u.longitude, 'reputationScore': u.reputationScore,
-      'creditBalance': u.creditBalance, 'totalTrades': u.totalTrades,
-      'disputeCount': u.disputeCount,
-    })).toList();
+    final list = _users
+        .map((u) => jsonEncode({
+              'id': u.id,
+              'phone': u.phone,
+              'name': u.name,
+              'village': u.village,
+              'latitude': u.latitude,
+              'longitude': u.longitude,
+              'reputationScore': u.reputationScore,
+              'creditBalance': u.creditBalance,
+              'totalTrades': u.totalTrades,
+              'disputeCount': u.disputeCount,
+            }))
+        .toList();
     await prefs.setStringList('db_users', list);
   }
 
   Future<void> _saveListings() async {
     final prefs = await SharedPreferences.getInstance();
-    final list = _listings.map((l) => jsonEncode({
-      'id': l.id, 'farmerId': l.farmerId, 'farmerName': l.farmerName,
-      'farmerVillage': l.farmerVillage, 'productType': l.productType,
-      'quantity': l.quantity, 'unit': l.unit,
-      'desiredProduct': l.desiredProduct,
-      'qualityExpectation': l.qualityExpectation,
-      'valuationScore': l.valuationScore, 'latitude': l.latitude,
-      'longitude': l.longitude, 'status': l.status,
-    })).toList();
+    final list = _listings
+        .map((l) => jsonEncode({
+              'id': l.id,
+              'farmerId': l.farmerId,
+              'farmerName': l.farmerName,
+              'farmerVillage': l.farmerVillage,
+              'productType': l.productType,
+              'quantity': l.quantity,
+              'unit': l.unit,
+              'desiredProduct': l.desiredProduct,
+              'qualityExpectation': l.qualityExpectation,
+              'valuationScore': l.valuationScore,
+              'latitude': l.latitude,
+              'longitude': l.longitude,
+              'status': l.status,
+            }))
+        .toList();
     await prefs.setStringList('db_listings', list);
   }
 

@@ -10,6 +10,7 @@ import '../../providers/app_state.dart';
 import '../../models/trade_model.dart';
 import '../../widgets/translated_text.dart';
 import '../../models/evidence_model.dart';
+import '../../services/voice_service.dart';
 
 class TradeDetailScreen extends StatelessWidget {
   final TradeModel trade;
@@ -30,9 +31,24 @@ class TradeDetailScreen extends StatelessWidget {
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            VoiceService.instance.stopSpeaking();
+            Navigator.pop(context);
+          },
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.volume_up_rounded),
+            tooltip: 'Read trade details aloud',
+            onPressed: () {
+              final roles =
+                  trade.participants.map((p) => p.farmerName).join(' and ');
+              final summary =
+                  'This is a trade loop involving $roles. The current status is ${trade.status}.';
+              VoiceService.instance
+                  .speak(summary, localeId: appState.currentLanguage);
+            },
+          ),
           if (trade.status == 'confirmed' || trade.status == 'executing')
             IconButton(
               icon: const Icon(Icons.report_problem_outlined),

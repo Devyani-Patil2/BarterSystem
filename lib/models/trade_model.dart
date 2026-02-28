@@ -1,7 +1,8 @@
 class TradeModel {
   final String loopId;
   final List<TradeParticipant> participants;
-  final String status; // pending, confirmed, executing, completed, failed, cancelled
+  final String
+      status; // pending, confirmed, executing, completed, failed, cancelled
   final DateTime createdAt;
   final DateTime? completedAt;
   final List<CreditMovement> creditMovements;

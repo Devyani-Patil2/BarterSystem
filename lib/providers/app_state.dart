@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
@@ -190,7 +190,7 @@ class AppState extends ChangeNotifier {
 
     // Only truly new users (not in backend) must create and confirm PIN
     _isNewUser = !isExistingUser;
-    
+
     _verificationId = phoneNumber;
     _isLoading = false;
     notifyListeners();
@@ -234,7 +234,7 @@ class AppState extends ChangeNotifier {
     if (matchedUsers.isNotEmpty) {
       // Old user logging in
       if (storedPin == null) {
-        // They are on a new device or cleared app data. 
+        // They are on a new device or cleared app data.
         // We accept the PIN they just entered as their new local PIN.
         await prefs.setString('pin_$_pendingPhone', pin);
       } else if (storedPin != pin) {
@@ -248,7 +248,7 @@ class AppState extends ChangeNotifier {
       _currentUser = matchedUsers.first;
       await prefs.setString('userId', _currentUser!.id);
       await prefs.setString('userName', _currentUser!.name);
-      
+
       // Load their data
       await _loadDataFromFirestore();
       _startListeningToFirestore();
@@ -257,7 +257,6 @@ class AppState extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
       return true;
-
     } else {
       // User doesn't exist in backend AND is trying to verify PIN?
       // This shouldn't normally happen since checkPhone routes them to create PIN.
@@ -291,9 +290,10 @@ class AppState extends ChangeNotifier {
       latitude = position.latitude;
       longitude = position.longitude;
       if (village.isEmpty || village == 'Unknown') {
-        final localeIdentifier = '${_locale.languageCode}_${_locale.countryCode}';
+        final localeIdentifier =
+            '${_locale.languageCode}_${_locale.countryCode}';
         resolvedVillage = await _location.getVillageFromCoordinates(
-          latitude, 
+          latitude,
           longitude,
           localeIdentifier: localeIdentifier,
         );
@@ -839,7 +839,7 @@ class AppState extends ChangeNotifier {
     _firestore.saveListing(listing);
     notifyListeners();
     // After adding, check for trade loops
-    _checkForTradeLoops();
+    checkAndCreateTradeLoops();
   }
 
   void updateListingStatus(String listingId, String status) {
@@ -856,9 +856,11 @@ class AppState extends ChangeNotifier {
 
   /// Build directed graph and detect cycles for multilateral trades.
   /// Nodes = Listings, Edge exists if listing A's desiredProduct == listing B's productType
-  void _checkForTradeLoops() {
+  Future<int> checkAndCreateTradeLoops() async {
     final active = activeListings;
-    if (active.length < 2) return;
+    if (active.length < 2) return 0;
+
+    int loopsFound = 0;
 
     // Build adjacency: listing index -> list of listing indices it can trade with
     final adj = <int, List<int>>{};
@@ -909,11 +911,19 @@ class AppState extends ChangeNotifier {
       return false;
     }
 
+    // Try to find as many distinct loops as possible
     for (int i = 0; i < active.length; i++) {
       if (!visited.contains(i)) {
-        if (dfs(i)) break; // Stop after finding one loop for simplicity
+        if (dfs(i)) {
+          loopsFound++;
+          // Clear visited/stack to find more disjoint loops, or let it continue
+          visited.clear();
+          recStack.clear();
+        }
       }
     }
+
+    return loopsFound;
   }
 
   void _createTradeFromCycle(List<int> cyclePath, List<ListingModel> active) {

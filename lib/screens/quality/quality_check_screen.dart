@@ -108,7 +108,6 @@ class _QualityCheckScreenState extends State<QualityCheckScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       appBar: AppBar(
         title: Text(
           'AI Quality Check',
@@ -227,8 +226,7 @@ class _QualityCheckScreenState extends State<QualityCheckScreen> {
                   child: Center(
                     child: TextButton.icon(
                       onPressed: _pickFromGallery,
-                      icon:
-                          const Icon(Icons.photo_library_outlined, size: 18),
+                      icon: const Icon(Icons.photo_library_outlined, size: 18),
                       label: Text(
                         'Or pick from gallery',
                         style: GoogleFonts.inter(fontSize: 13),
@@ -430,8 +428,8 @@ class _QualityCheckScreenState extends State<QualityCheckScreen> {
                           '${_report!.latitude.toStringAsFixed(4)}, ${_report!.longitude.toStringAsFixed(4)}'),
                       _metaRow(Icons.access_time, 'Timestamp',
                           _report!.timestamp.toString().substring(0, 19)),
-                      _metaRow(Icons.tag, 'Report ID',
-                          _report!.id.substring(0, 8)),
+                      _metaRow(
+                          Icons.tag, 'Report ID', _report!.id.substring(0, 8)),
                     ],
                   ),
                 ),

@@ -9,8 +9,10 @@ class DisputeModel {
   final String? deliveryPhotoUrl;
   final String description;
   final double aiSimilarityScore;
-  final String aiVerdict; // valid_complaint, partial_refund, full_penalty, false_complaint
-  final String resolution; // pending, resolved_refund, resolved_penalty, dismissed
+  final String
+      aiVerdict; // valid_complaint, partial_refund, full_penalty, false_complaint
+  final String
+      resolution; // pending, resolved_refund, resolved_penalty, dismissed
   final String status; // open, under_review, resolved, appealed
   final double refundAmount;
   final DateTime createdAt;
@@ -75,9 +77,8 @@ class DisputeModel {
       createdAt: map['createdAt'] != null
           ? DateTime.parse(map['createdAt'])
           : DateTime.now(),
-      resolvedAt: map['resolvedAt'] != null
-          ? DateTime.parse(map['resolvedAt'])
-          : null,
+      resolvedAt:
+          map['resolvedAt'] != null ? DateTime.parse(map['resolvedAt']) : null,
     );
   }
 }

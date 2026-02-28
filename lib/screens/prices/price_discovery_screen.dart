@@ -50,7 +50,8 @@ class _PriceDiscoveryScreenState extends State<PriceDiscoveryScreen> {
           content: Text(success
               ? 'Prices updated from government mandi data ✅'
               : 'Could not reach API. Using cached prices.'),
-          backgroundColor: success ? AppTheme.successGreen : AppTheme.accentAmber,
+          backgroundColor:
+              success ? AppTheme.successGreen : AppTheme.accentAmber,
         ),
       );
     }
@@ -63,7 +64,6 @@ class _PriceDiscoveryScreenState extends State<PriceDiscoveryScreen> {
       ..sort((a, b) => b.value.compareTo(a.value));
 
     return Scaffold(
-      
       appBar: AppBar(
         title: Text('Mandi Price Discovery',
             style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
@@ -152,7 +152,8 @@ class _PriceDiscoveryScreenState extends State<PriceDiscoveryScreen> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 12),
                             decoration: BoxDecoration(
-                              color: AppTheme.primaryGreen.withValues(alpha: 0.1),
+                              color:
+                                  AppTheme.primaryGreen.withValues(alpha: 0.1),
                               borderRadius: const BorderRadius.vertical(
                                   top: Radius.circular(16)),
                             ),
@@ -190,7 +191,8 @@ class _PriceDiscoveryScreenState extends State<PriceDiscoveryScreen> {
                           ),
                           // Price rows
                           ...sortedEntries.map((entry) {
-                            final emoji = AppConstants.productEmojis[entry.key] ?? '📦';
+                            final emoji =
+                                AppConstants.productEmojis[entry.key] ?? '📦';
                             final appState = context.read<AppState>();
                             final demandCount = appState.activeListings
                                 .where((l) =>

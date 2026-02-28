@@ -78,7 +78,9 @@ class _TradesScreenState extends State<TradesScreen>
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
-            onPressed: () {},
+            onPressed: () async {
+              await context.read<AppState>().checkAndCreateTradeLoops();
+            },
             tooltip: 'Refresh trades',
           ),
         ],
@@ -115,6 +117,66 @@ class _TradesScreenState extends State<TradesScreen>
             ),
           ),
           const SizedBox(height: 8),
+          // N-Party Matching Button
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton.icon(
+                onPressed: () async {
+                  // Trigger the N-Party DFS scan
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                          'Scanning marketplace for circular trade loops...'),
+                      duration: Duration(seconds: 1),
+                    ),
+                  );
+
+                  final loopsFound =
+                      await context.read<AppState>().checkAndCreateTradeLoops();
+
+                  if (!context.mounted) return;
+
+                  if (loopsFound > 0) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                            'Success! Found $loopsFound new N-Party trade route(s). Check Pending tab.'),
+                        backgroundColor: AppTheme.primaryGreen,
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text(
+                            'No new circular trade routes found at this time.'),
+                        backgroundColor: Colors.grey.shade800,
+                      ),
+                    );
+                  }
+                },
+                icon: const Icon(Icons.route_rounded, color: Colors.white),
+                label: const Text(
+                  'Find Trade Routes (N-Party)',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 15,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryGreen,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 2,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
           // Tab content
           Expanded(
             child: TabBarView(

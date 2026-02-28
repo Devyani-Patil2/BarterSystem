@@ -41,7 +41,8 @@ class LocationService {
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         return LocationResult(
-          error: 'Location services are turned off. Please enable GPS in your phone settings.',
+          error:
+              'Location services are turned off. Please enable GPS in your phone settings.',
           permissionDenied: false,
         );
       }
@@ -54,7 +55,8 @@ class LocationService {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
           return LocationResult(
-            error: 'Location permission was denied. Tap "Auto-detect" again and allow access.',
+            error:
+                'Location permission was denied. Tap "Auto-detect" again and allow access.',
             permissionDenied: true,
           );
         }
@@ -62,7 +64,8 @@ class LocationService {
 
       if (permission == LocationPermission.deniedForever) {
         return LocationResult(
-          error: 'Location permission is permanently denied. Go to Settings → Apps → AgroSwap → Permissions → Location → Allow.',
+          error:
+              'Location permission is permanently denied. Go to Settings → Apps → AgroSwap → Permissions → Location → Allow.',
           permissionDenied: true,
         );
       }
@@ -85,7 +88,7 @@ class LocationService {
         if (localeIdentifier != null) {
           await setLocaleIdentifier(localeIdentifier);
         }
-        
+
         final placemarks = await placemarkFromCoordinates(
           position.latitude,
           position.longitude,
@@ -100,7 +103,8 @@ class LocationService {
         }
       } catch (geocodeError) {
         // Geocoding failed but we still have GPS coordinates
-        villageName = '${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}';
+        villageName =
+            '${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}';
       }
 
       _lastVillage = villageName;
@@ -112,11 +116,13 @@ class LocationService {
       );
     } on LocationServiceDisabledException {
       return LocationResult(
-        error: 'GPS is turned off. Please enable Location in your phone settings.',
+        error:
+            'GPS is turned off. Please enable Location in your phone settings.',
       );
     } catch (e) {
       return LocationResult(
-        error: 'Could not detect location: ${e.toString().split(':').last.trim()}',
+        error:
+            'Could not detect location: ${e.toString().split(':').last.trim()}',
       );
     }
   }
@@ -128,15 +134,15 @@ class LocationService {
   }
 
   /// Reverse geocode coordinates to get village/locality name.
-  Future<String> getVillageFromCoordinates(
-      double latitude, double longitude, {String? localeIdentifier}) async {
+  Future<String> getVillageFromCoordinates(double latitude, double longitude,
+      {String? localeIdentifier}) async {
     try {
       if (localeIdentifier != null) {
         await setLocaleIdentifier(localeIdentifier);
       }
       final placemarks = await placemarkFromCoordinates(
-        latitude, 
-        longitude, 
+        latitude,
+        longitude,
       );
       if (placemarks.isEmpty) return 'Unknown';
       return _extractVillage(placemarks.first);
@@ -146,14 +152,14 @@ class LocationService {
   }
 
   /// Get full address string from coordinates.
-  Future<String> getFullAddress(
-      double latitude, double longitude, {String? localeIdentifier}) async {
+  Future<String> getFullAddress(double latitude, double longitude,
+      {String? localeIdentifier}) async {
     try {
       if (localeIdentifier != null) {
         await setLocaleIdentifier(localeIdentifier);
       }
       final placemarks = await placemarkFromCoordinates(
-        latitude, 
+        latitude,
         longitude,
       );
       if (placemarks.isEmpty) return 'Unknown location';
@@ -164,8 +170,7 @@ class LocationService {
   }
 
   /// Calculate distance between two points in kilometers.
-  double getDistanceKm(
-      double lat1, double lon1, double lat2, double lon2) {
+  double getDistanceKm(double lat1, double lon1, double lat2, double lon2) {
     return Geolocator.distanceBetween(lat1, lon1, lat2, lon2) / 1000;
   }
 
@@ -189,10 +194,12 @@ class LocationService {
     if (place.locality != null && place.locality!.isNotEmpty) {
       return place.locality!;
     }
-    if (place.subAdministrativeArea != null && place.subAdministrativeArea!.isNotEmpty) {
+    if (place.subAdministrativeArea != null &&
+        place.subAdministrativeArea!.isNotEmpty) {
       return place.subAdministrativeArea!;
     }
-    if (place.administrativeArea != null && place.administrativeArea!.isNotEmpty) {
+    if (place.administrativeArea != null &&
+        place.administrativeArea!.isNotEmpty) {
       return place.administrativeArea!;
     }
     return 'Unknown';
@@ -202,7 +209,8 @@ class LocationService {
     final parts = <String>[
       if (p.subLocality != null && p.subLocality!.isNotEmpty) p.subLocality!,
       if (p.locality != null && p.locality!.isNotEmpty) p.locality!,
-      if (p.subAdministrativeArea != null && p.subAdministrativeArea!.isNotEmpty)
+      if (p.subAdministrativeArea != null &&
+          p.subAdministrativeArea!.isNotEmpty)
         p.subAdministrativeArea!,
       if (p.administrativeArea != null && p.administrativeArea!.isNotEmpty)
         p.administrativeArea!,

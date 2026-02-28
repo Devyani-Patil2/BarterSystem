@@ -46,7 +46,8 @@ class HomeScreen extends StatelessWidget {
                                 color: Colors.white,
                                 shape: BoxShape.circle,
                                 image: DecorationImage(
-                                  image: AssetImage('assets/images/app_logo.png'),
+                                  image:
+                                      AssetImage('assets/images/app_logo.png'),
                                   fit: BoxFit.cover,
                                 ),
                               ),

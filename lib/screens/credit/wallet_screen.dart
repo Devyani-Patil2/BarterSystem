@@ -16,9 +16,9 @@ class WalletScreen extends StatelessWidget {
     final transactions = appState.myTransactions;
 
     return Scaffold(
-      
       appBar: AppBar(
-        title: Text('Credit Wallet', style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
+        title: Text('Credit Wallet',
+            style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () => Navigator.pop(context),
@@ -166,7 +166,8 @@ class WalletScreen extends StatelessWidget {
               delay: const Duration(milliseconds: 200),
               child: Row(
                 children: [
-                  const Icon(Icons.history, color: AppTheme.primaryGreen, size: 20),
+                  const Icon(Icons.history,
+                      color: AppTheme.primaryGreen, size: 20),
                   const SizedBox(width: 8),
                   Text(
                     'Transaction History',
@@ -190,7 +191,8 @@ class WalletScreen extends StatelessWidget {
                 child: Center(
                   child: Column(
                     children: [
-                      Icon(Icons.receipt_long, size: 40, color: Colors.grey.shade300),
+                      Icon(Icons.receipt_long,
+                          size: 40, color: Colors.grey.shade300),
                       const SizedBox(height: 8),
                       Text(
                         'No transactions yet',

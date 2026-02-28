@@ -53,7 +53,8 @@ class NotificationService {
   Future<void> notifyTradeMatched(String productInfo) async {
     await show(
       title: '🔄 New Trade Match Found!',
-      body: 'A trade loop involving $productInfo has been created. Confirm now!',
+      body:
+          'A trade loop involving $productInfo has been created. Confirm now!',
       id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
     );
   }
@@ -71,7 +72,8 @@ class NotificationService {
   Future<void> notifyRequestFulfilled(String product) async {
     await show(
       title: '🎉 Urgent Request Fulfilled!',
-      body: 'Your urgent request for $product has been fulfilled. Credits transferred.',
+      body:
+          'Your urgent request for $product has been fulfilled. Credits transferred.',
       id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
     );
   }
