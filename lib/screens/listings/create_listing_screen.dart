@@ -7,6 +7,8 @@ import '../../config/theme.dart';
 import '../../config/constants.dart';
 import '../../providers/app_state.dart';
 import '../../models/listing_model.dart';
+import '../../widgets/translated_text.dart';
+
 
 class CreateListingScreen extends StatefulWidget {
   const CreateListingScreen({super.key});
@@ -41,7 +43,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedProduct == null || _desiredProduct == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select both products')),
+        const SnackBar(content: TranslatedText('Please select both products')),
       );
       return;
     }
@@ -67,7 +69,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Listing created! Looking for trade matches... 🔄'),
+        content: TranslatedText('Listing created! Looking for trade matches... 🔄'),
         backgroundColor: AppTheme.successGreen,
       ),
     );
@@ -85,7 +87,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
     return Scaffold(
       
       appBar: AppBar(
-        title: Text(
+        title: TranslatedText(
           'Create Listing',
           style: GoogleFonts.outfit(fontWeight: FontWeight.w700),
         ),
@@ -152,7 +154,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                         initialValue: _selectedUnit,
                         decoration: const InputDecoration(),
                         items: AppConstants.units
-                            .map((u) => DropdownMenuItem(value: u, child: Text(u)))
+                            .map((u) => DropdownMenuItem(value: u, child: TranslatedText(u)))
                             .toList(),
                         onChanged: (v) => setState(() => _selectedUnit = v!),
                       ),
@@ -210,7 +212,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                               ),
                             ),
                             child: Center(
-                              child: Text(
+                              child: TranslatedText(
                                 q,
                                 style: GoogleFonts.inter(
                                   fontSize: 12,
@@ -248,14 +250,14 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              TranslatedText(
                                 'Estimated Value',
                                 style: GoogleFonts.inter(
                                   fontSize: 12,
                                   color: Colors.white.withValues(alpha: 0.8),
                                 ),
                               ),
-                              Text(
+                              TranslatedText(
                                 '₹${_estimatedValue.toStringAsFixed(0)}',
                                 style: GoogleFonts.outfit(
                                   fontSize: 24,
@@ -266,7 +268,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                             ],
                           ),
                         ),
-                        Text(
+                        TranslatedText(
                           'Based on\nmandi rates',
                           textAlign: TextAlign.right,
                           style: GoogleFonts.inter(
@@ -289,7 +291,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                   height: 56,
                   child: ElevatedButton(
                     onPressed: _createListing,
-                    child: Text(
+                    child: TranslatedText(
                       'Create Listing 🌱',
                       style: GoogleFonts.outfit(
                         fontSize: 17,
@@ -310,9 +312,9 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
   Widget _sectionTitle(String title, String emoji) {
     return Row(
       children: [
-        Text(emoji, style: const TextStyle(fontSize: 20)),
+        TranslatedText(emoji, style: const TextStyle(fontSize: 20)),
         const SizedBox(width: 8),
-        Text(
+        TranslatedText(
           title,
           style: GoogleFonts.outfit(
             fontSize: 16,
@@ -373,10 +375,10 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(emoji, style: const TextStyle(fontSize: 18)),
+                TranslatedText(emoji, style: const TextStyle(fontSize: 18)),
                 const SizedBox(width: 8),
                 Flexible(
-                  child: Text(
+                  child: TranslatedText(
                     product,
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.inter(

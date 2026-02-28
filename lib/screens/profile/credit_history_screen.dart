@@ -4,6 +4,8 @@ import 'package:animate_do/animate_do.dart';
 import 'package:provider/provider.dart';
 import '../../config/theme.dart';
 import '../../providers/app_state.dart';
+import '../../widgets/translated_text.dart';
+
 
 class CreditHistoryScreen extends StatelessWidget {
   const CreditHistoryScreen({super.key});
@@ -19,7 +21,7 @@ class CreditHistoryScreen extends StatelessWidget {
     return Scaffold(
       
       appBar: AppBar(
-        title: Text('Credit History',
+        title: TranslatedText('Credit History',
             style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
@@ -42,7 +44,7 @@ class CreditHistoryScreen extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      TranslatedText(
                         'Current Balance',
                         style: GoogleFonts.inter(
                           fontSize: 13,
@@ -50,7 +52,7 @@ class CreditHistoryScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
+                      TranslatedText(
                         '₹${balance.toStringAsFixed(0)}',
                         style: GoogleFonts.outfit(
                           fontSize: 36,
@@ -80,7 +82,7 @@ class CreditHistoryScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                Text(
+                TranslatedText(
                   'Transaction History',
                   style: GoogleFonts.outfit(
                     fontSize: 16,
@@ -88,7 +90,7 @@ class CreditHistoryScreen extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                Text(
+                TranslatedText(
                   '${transactions.length} transactions',
                   style: GoogleFonts.inter(
                       fontSize: 12, color: Colors.grey.shade500),
@@ -107,13 +109,13 @@ class CreditHistoryScreen extends StatelessWidget {
                         Icon(Icons.receipt_long,
                             size: 64, color: Colors.grey.shade300),
                         const SizedBox(height: 12),
-                        Text(
+                        TranslatedText(
                           'No transactions yet',
                           style: GoogleFonts.outfit(
                               fontSize: 16, color: Colors.grey.shade500),
                         ),
                         const SizedBox(height: 4),
-                        Text(
+                        TranslatedText(
                           'Credits will move when you trade',
                           style: GoogleFonts.inter(
                               fontSize: 12, color: Colors.grey.shade400),
@@ -172,7 +174,7 @@ class CreditHistoryScreen extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
+                                    TranslatedText(
                                       tx.description,
                                       style: GoogleFonts.inter(
                                         fontSize: 12,
@@ -182,7 +184,7 @@ class CreditHistoryScreen extends StatelessWidget {
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     const SizedBox(height: 2),
-                                    Text(
+                                    TranslatedText(
                                       _formatDate(tx.timestamp),
                                       style: GoogleFonts.inter(
                                         fontSize: 10,
@@ -195,7 +197,7 @@ class CreditHistoryScreen extends StatelessWidget {
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Text(
+                                  TranslatedText(
                                     '${isCredit ? '+' : '-'}₹${tx.amount.toStringAsFixed(0)}',
                                     style: GoogleFonts.outfit(
                                       fontSize: 15,
@@ -205,7 +207,7 @@ class CreditHistoryScreen extends StatelessWidget {
                                           : AppTheme.errorRed,
                                     ),
                                   ),
-                                  Text(
+                                  TranslatedText(
                                     'Bal: ₹${tx.balanceAfter.toStringAsFixed(0)}',
                                     style: GoogleFonts.inter(
                                       fontSize: 10,

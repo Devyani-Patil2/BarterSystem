@@ -6,6 +6,7 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import '../../config/theme.dart';
 import '../../config/constants.dart';
 import '../../providers/app_state.dart';
+import '../../widgets/translated_text.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -139,7 +140,7 @@ class HomeScreen extends StatelessWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
+                                      TranslatedText(
                                         'Credit Balance',
                                         style: GoogleFonts.inter(
                                           fontSize: 12,
@@ -288,6 +289,7 @@ class HomeScreen extends StatelessWidget {
                 onTap: () => Navigator.pushNamed(context, '/urgent-requests'),
               ),
             ),
+            const SizedBox(width: 12),
             Expanded(
               child: _quickActionCard(
                 context,
@@ -337,7 +339,7 @@ class HomeScreen extends StatelessWidget {
               child: Icon(icon, color: color, size: 24),
             ),
             const SizedBox(height: 8),
-            Text(
+            TranslatedText(
               label,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
@@ -416,7 +418,7 @@ class HomeScreen extends StatelessWidget {
               color: color,
             ),
           ),
-          Text(
+          TranslatedText(
             label,
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(
@@ -435,7 +437,7 @@ class HomeScreen extends StatelessWidget {
       children: [
         Icon(icon, color: AppTheme.primaryGreen, size: 22),
         const SizedBox(width: 8),
-        Text(
+        TranslatedText(
           title,
           style: GoogleFonts.outfit(
             fontSize: 18,
@@ -464,7 +466,7 @@ class HomeScreen extends StatelessWidget {
           children: [
             Icon(Icons.sync_rounded, size: 40, color: Colors.grey.shade300),
             const SizedBox(height: 8),
-            Text(
+            TranslatedText(
               'No active trade loops',
               style: GoogleFonts.inter(
                 fontSize: 14,
@@ -472,7 +474,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            Text(
+            TranslatedText(
               'Create a listing to find matches',
               style: GoogleFonts.inter(
                 fontSize: 12,
@@ -526,7 +528,7 @@ class HomeScreen extends StatelessWidget {
                     color: AppTheme.accentAmber.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Text(
+                  child: TranslatedText(
                     '${trade.participants.length}-Party Loop',
                     style: GoogleFonts.inter(
                       fontSize: 12,
@@ -543,7 +545,7 @@ class HomeScreen extends StatelessWidget {
                     color: AppTheme.accentAmber.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Text(
+                  child: TranslatedText(
                     trade.status.toUpperCase(),
                     style: GoogleFonts.inter(
                       fontSize: 10,
@@ -565,7 +567,7 @@ class HomeScreen extends StatelessWidget {
                     avatar: Text(AppConstants.productEmojis[
                             trade.participants[i].offerProduct] ??
                         '📦'),
-                    label: Text(
+                    label: TranslatedText(
                       trade.participants[i].farmerName.split(' ').first,
                       style: GoogleFonts.inter(fontSize: 11),
                     ),
@@ -589,7 +591,7 @@ class HomeScreen extends StatelessWidget {
                 const Icon(Icons.touch_app,
                     size: 14, color: AppTheme.primaryGreen),
                 const SizedBox(width: 4),
-                Text(
+                TranslatedText(
                   'Tap to view details & confirm',
                   style: GoogleFonts.inter(
                     fontSize: 12,
@@ -620,7 +622,7 @@ class HomeScreen extends StatelessWidget {
             Icon(Icons.handshake_rounded,
                 size: 40, color: Colors.grey.shade300),
             const SizedBox(height: 8),
-            Text(
+            TranslatedText(
               appState.myListings.isEmpty
                   ? 'Create a listing to find matches'
                   : 'No matching listings yet',
@@ -628,7 +630,7 @@ class HomeScreen extends StatelessWidget {
                   GoogleFonts.inter(fontSize: 14, color: Colors.grey.shade500),
             ),
             const SizedBox(height: 4),
-            Text(
+            TranslatedText(
               appState.myListings.isEmpty
                   ? 'Post what you offer & want to see matches here'
                   : 'Other farmers will appear when they match your needs',
@@ -682,14 +684,14 @@ class HomeScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        TranslatedText(
                           listing.productType,
                           style: GoogleFonts.outfit(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        Text(
+                        TranslatedText(
                           '${listing.quantity} ${listing.unit} • ${listing.farmerName}',
                           style: GoogleFonts.inter(
                             fontSize: 12,
@@ -709,7 +711,7 @@ class HomeScreen extends StatelessWidget {
                           color: AppTheme.primaryGreen.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Text(
+                        child: TranslatedText(
                           '✓ Match',
                           style: GoogleFonts.inter(
                             fontSize: 10,
@@ -719,7 +721,7 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 2),
-                      Text(
+                      TranslatedText(
                         'Wants ${listing.desiredProduct}',
                         style: GoogleFonts.inter(
                           fontSize: 11,

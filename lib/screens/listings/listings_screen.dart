@@ -6,6 +6,7 @@ import '../../config/theme.dart';
 import '../../config/constants.dart';
 import '../../providers/app_state.dart';
 import '../../models/listing_model.dart';
+import '../../widgets/translated_text.dart';
 
 class ListingsScreen extends StatefulWidget {
   const ListingsScreen({super.key});
@@ -82,7 +83,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
                     const Icon(Icons.near_me,
                         size: 14, color: AppTheme.primaryGreen),
                     const SizedBox(width: 6),
-                    Text(
+                    TranslatedText(
                       'Showing nearest farmers first',
                       style: GoogleFonts.inter(
                         fontSize: 11,
@@ -121,7 +122,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
                         Icon(Icons.storefront,
                             size: 64, color: Colors.grey.shade300),
                         const SizedBox(height: 12),
-                        Text(
+                        TranslatedText(
                           'No listings found',
                           style: GoogleFonts.outfit(
                               fontSize: 16, color: Colors.grey.shade500),
@@ -185,7 +186,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
             ),
           ),
           child: Center(
-            child: Text(
+            child: TranslatedText(
               label == 'All'
                   ? '🌐 All'
                   : '${AppConstants.productEmojis[label] ?? ''} $label',
@@ -248,7 +249,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      TranslatedText(
                         listing.productType,
                         style: GoogleFonts.outfit(
                             fontSize: 15, fontWeight: FontWeight.w600),
@@ -278,7 +279,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
                         color: AppTheme.accentAmber.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Text(
+                      child: TranslatedText(
                         'Wants: ${listing.desiredProduct}',
                         style: GoogleFonts.inter(
                           fontSize: 10,
@@ -352,7 +353,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
                     Icon(Icons.local_shipping_outlined,
                         size: 13, color: Colors.grey.shade500),
                     const SizedBox(width: 4),
-                    Text(
+                    TranslatedText(
                       'Transport: ₹${transportCost.toStringAsFixed(0)}',
                       style: GoogleFonts.inter(
                         fontSize: 10,
@@ -360,7 +361,7 @@ class _ListingsScreenState extends State<ListingsScreen> {
                       ),
                     ),
                   ] else
-                    Text(
+                    TranslatedText(
                       '🆓 Free delivery zone',
                       style: GoogleFonts.inter(
                         fontSize: 10,
@@ -405,19 +406,19 @@ class _ListingsScreenState extends State<ListingsScreen> {
               style: const TextStyle(fontSize: 36),
             ),
             const SizedBox(height: 8),
-            Text(
+            TranslatedText(
               listing.productType,
               style:
                   GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w600),
               textAlign: TextAlign.center,
             ),
-            Text(
+            TranslatedText(
               '${listing.quantity} ${listing.unit}',
               style:
                   GoogleFonts.inter(fontSize: 12, color: Colors.grey.shade600),
             ),
             const SizedBox(height: 6),
-            Text(
+            TranslatedText(
               'Wants: ${listing.desiredProduct}',
               style: GoogleFonts.inter(
                 fontSize: 11,

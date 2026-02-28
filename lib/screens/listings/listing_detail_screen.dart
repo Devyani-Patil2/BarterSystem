@@ -6,6 +6,8 @@ import '../../config/theme.dart';
 import '../../config/constants.dart';
 import '../../models/listing_model.dart';
 import '../../providers/app_state.dart';
+import '../../widgets/translated_text.dart';
+
 
 class ListingDetailScreen extends StatelessWidget {
   final ListingModel listing;
@@ -57,7 +59,7 @@ class ListingDetailScreen extends StatelessWidget {
     return Scaffold(
       
       appBar: AppBar(
-        title: Text(listing.productType,
+        title: TranslatedText(listing.productType,
             style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
@@ -80,9 +82,9 @@ class ListingDetailScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    Text(emoji, style: const TextStyle(fontSize: 64)),
+                    TranslatedText(emoji, style: const TextStyle(fontSize: 64)),
                     const SizedBox(height: 12),
-                    Text(
+                    TranslatedText(
                       listing.productType,
                       style: GoogleFonts.outfit(
                         fontSize: 28,
@@ -91,7 +93,7 @@ class ListingDetailScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(
+                    TranslatedText(
                       '${listing.quantity} ${listing.unit}',
                       style: GoogleFonts.inter(
                         fontSize: 18,
@@ -106,7 +108,7 @@ class ListingDetailScreen extends StatelessWidget {
                         color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Text(
+                      child: TranslatedText(
                         '₹${listing.valuationScore.toStringAsFixed(0)} estimated value',
                         style: GoogleFonts.inter(
                           fontSize: 14,
@@ -178,7 +180,7 @@ class ListingDetailScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Center(
-                        child: Text(
+                        child: TranslatedText(
                           AppConstants.productEmojis[listing.desiredProduct] ??
                               '🎯',
                           style: const TextStyle(fontSize: 22),
@@ -190,14 +192,14 @@ class ListingDetailScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          TranslatedText(
                             'Wants in Exchange',
                             style: GoogleFonts.inter(
                               fontSize: 12,
                               color: Colors.grey.shade600,
                             ),
                           ),
-                          Text(
+                          TranslatedText(
                             listing.desiredProduct,
                             style: GoogleFonts.outfit(
                               fontSize: 18,
@@ -240,7 +242,7 @@ class ListingDetailScreen extends StatelessWidget {
                           Icon(Icons.balance_rounded,
                               color: _fairnessColor(fairnessPercent), size: 20),
                           const SizedBox(width: 8),
-                          Text(
+                          TranslatedText(
                             'Fairness Score',
                             style: GoogleFonts.outfit(
                               fontSize: 15,
@@ -257,7 +259,7 @@ class ListingDetailScreen extends StatelessWidget {
                                   .withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Text(
+                            child: TranslatedText(
                               '${fairnessPercent.toStringAsFixed(0)}%',
                               style: GoogleFonts.outfit(
                                 fontSize: 16,
@@ -275,18 +277,18 @@ class ListingDetailScreen extends StatelessWidget {
                           Expanded(
                             child: Column(
                               children: [
-                                Text('Your Offer',
+                                TranslatedText('Your Offer',
                                     style: GoogleFonts.inter(
                                         fontSize: 11,
                                         color: Colors.grey.shade600)),
                                 const SizedBox(height: 2),
-                                Text(
+                                TranslatedText(
                                   '₹${myMatchingListing.valuationScore.toStringAsFixed(0)}',
                                   style: GoogleFonts.outfit(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold),
                                 ),
-                                Text(myMatchingListing.productType,
+                                TranslatedText(myMatchingListing.productType,
                                     style: GoogleFonts.inter(
                                         fontSize: 11,
                                         color: Colors.grey.shade500)),
@@ -298,18 +300,18 @@ class ListingDetailScreen extends StatelessWidget {
                           Expanded(
                             child: Column(
                               children: [
-                                Text('Their Offer',
+                                TranslatedText('Their Offer',
                                     style: GoogleFonts.inter(
                                         fontSize: 11,
                                         color: Colors.grey.shade600)),
                                 const SizedBox(height: 2),
-                                Text(
+                                TranslatedText(
                                   '₹${listing.valuationScore.toStringAsFixed(0)}',
                                   style: GoogleFonts.outfit(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold),
                                 ),
-                                Text(listing.productType,
+                                TranslatedText(listing.productType,
                                     style: GoogleFonts.inter(
                                         fontSize: 11,
                                         color: Colors.grey.shade500)),
@@ -331,7 +333,7 @@ class ListingDetailScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 6),
-                      Text(
+                      TranslatedText(
                         _fairnessLabel(fairnessPercent),
                         style: GoogleFonts.inter(
                           fontSize: 12,
@@ -383,7 +385,7 @@ class ListingDetailScreen extends StatelessWidget {
                     ),
                     icon: const Icon(Icons.handshake_rounded,
                         color: Colors.white),
-                    label: Text(
+                    label: TranslatedText(
                       'Accept & Barter',
                       style: GoogleFonts.outfit(
                         fontSize: 17,
@@ -420,7 +422,7 @@ class ListingDetailScreen extends StatelessWidget {
                           color: AppTheme.accentAmber),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: Text(
+                        child: TranslatedText(
                           'Create your own listing first to trade with this farmer!',
                           style: GoogleFonts.inter(
                               fontSize: 13, color: Colors.grey.shade700),
@@ -457,7 +459,7 @@ class ListingDetailScreen extends StatelessWidget {
           children: [
             Icon(Icons.balance_rounded, color: _fairnessColor(fairness)),
             const SizedBox(width: 8),
-            Text('Confirm Trade',
+            TranslatedText('Confirm Trade',
                 style: GoogleFonts.outfit(fontWeight: FontWeight.w700)),
           ],
         ),
@@ -476,11 +478,11 @@ class ListingDetailScreen extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text('You give:',
+                      TranslatedText('You give:',
                           style: GoogleFonts.inter(
                               fontSize: 12, color: Colors.grey.shade600)),
                       const Spacer(),
-                      Text(
+                      TranslatedText(
                         '${myListing.productType} (₹${myListing.valuationScore.toStringAsFixed(0)})',
                         style: GoogleFonts.inter(
                             fontSize: 13, fontWeight: FontWeight.w600),
@@ -493,11 +495,11 @@ class ListingDetailScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      Text('You get:',
+                      TranslatedText('You get:',
                           style: GoogleFonts.inter(
                               fontSize: 12, color: Colors.grey.shade600)),
                       const Spacer(),
-                      Text(
+                      TranslatedText(
                         '${theirListing.productType} (₹${theirListing.valuationScore.toStringAsFixed(0)})',
                         style: GoogleFonts.inter(
                             fontSize: 13, fontWeight: FontWeight.w600),
@@ -512,8 +514,8 @@ class ListingDetailScreen extends StatelessWidget {
             // Fairness indicator
             Row(
               children: [
-                Text('Fairness: ', style: GoogleFonts.inter(fontSize: 13)),
-                Text(
+                TranslatedText('Fairness: ', style: GoogleFonts.inter(fontSize: 13)),
+                TranslatedText(
                   '${fairness.toStringAsFixed(0)}%',
                   style: GoogleFonts.outfit(
                     fontSize: 16,
@@ -526,7 +528,7 @@ class ListingDetailScreen extends StatelessWidget {
             const SizedBox(height: 6),
 
             if (valueDiff > 0)
-              Text(
+              TranslatedText(
                 isInMyFavor
                     ? 'Your offer is ₹${valueDiff.toStringAsFixed(0)} more valuable'
                     : 'Their offer is ₹${valueDiff.toStringAsFixed(0)} more valuable',
@@ -567,7 +569,7 @@ class ListingDetailScreen extends StatelessWidget {
                               : AppTheme.accentAmber,
                         ),
                         const SizedBox(width: 6),
-                        Text(
+                        TranslatedText(
                           isInMyFavor
                               ? 'You receive ₹${valueDiff.toStringAsFixed(0)} credits'
                               : 'You pay ₹${valueDiff.toStringAsFixed(0)} credits',
@@ -582,12 +584,12 @@ class ListingDetailScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 6),
-                    Text(
+                    TranslatedText(
                       'Current balance: ₹${appState.currentUser?.creditBalance.toStringAsFixed(0) ?? "0"}',
                       style: GoogleFonts.inter(
                           fontSize: 11, color: Colors.grey.shade600),
                     ),
-                    Text(
+                    TranslatedText(
                       'After trade: ₹${((appState.currentUser?.creditBalance ?? 0) + (isInMyFavor ? valueDiff : -valueDiff)).toStringAsFixed(0)}',
                       style: GoogleFonts.inter(
                         fontSize: 11,
@@ -610,7 +612,7 @@ class ListingDetailScreen extends StatelessWidget {
                     const Icon(Icons.check_circle,
                         size: 16, color: AppTheme.successGreen),
                     const SizedBox(width: 6),
-                    Text(
+                    TranslatedText(
                       'Equal value — no credits needed!',
                       style: GoogleFonts.inter(
                         fontSize: 13,
@@ -623,7 +625,7 @@ class ListingDetailScreen extends StatelessWidget {
               ),
             const SizedBox(height: 12),
 
-            Text(
+            TranslatedText(
               'Are you OK with this trade?',
               style: GoogleFonts.inter(
                 fontSize: 14,
@@ -636,7 +638,7 @@ class ListingDetailScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel',
+            child: TranslatedText('Cancel',
                 style: GoogleFonts.inter(color: Colors.grey.shade600)),
           ),
           ElevatedButton.icon(
@@ -647,7 +649,7 @@ class ListingDetailScreen extends StatelessWidget {
 
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(
+                  content: TranslatedText(
                     '🤝 Trade created with ${theirListing.farmerName}! Check Active Trades',
                     style: GoogleFonts.inter(),
                   ),
@@ -661,7 +663,7 @@ class ListingDetailScreen extends StatelessWidget {
             },
             icon: const Icon(Icons.handshake_rounded,
                 size: 18, color: Colors.white),
-            label: Text(
+            label: TranslatedText(
               'Confirm Trade',
               style: GoogleFonts.inter(
                   fontWeight: FontWeight.w600, color: Colors.white),
@@ -708,7 +710,7 @@ class ListingDetailScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          TranslatedText(
             title,
             style: GoogleFonts.outfit(
               fontSize: 15,
@@ -730,12 +732,12 @@ class ListingDetailScreen extends StatelessWidget {
         children: [
           Icon(icon, size: 18, color: Colors.grey.shade500),
           const SizedBox(width: 10),
-          Text(
+          TranslatedText(
             label,
             style: GoogleFonts.inter(fontSize: 13, color: Colors.grey.shade600),
           ),
           const Spacer(),
-          Text(
+          TranslatedText(
             value,
             style: GoogleFonts.inter(
               fontSize: 13,

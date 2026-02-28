@@ -11,6 +11,7 @@ import 'services/app_localization.dart';
 import 'services/notification_service.dart';
 
 // Screens
+import 'widgets/translated_text.dart';
 import 'screens/splash/splash_screen.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/otp_screen.dart';
@@ -210,7 +211,7 @@ class _MainShellState extends State<MainShell> {
               size: 24,
             ),
             const SizedBox(height: 2),
-            Text(
+            TranslatedText(
               label,
               style: TextStyle(
                 fontSize: 10,

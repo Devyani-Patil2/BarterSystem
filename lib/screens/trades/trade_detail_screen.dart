@@ -8,6 +8,7 @@ import '../../config/theme.dart';
 import '../../config/constants.dart';
 import '../../providers/app_state.dart';
 import '../../models/trade_model.dart';
+import '../../widgets/translated_text.dart';
 import '../../models/evidence_model.dart';
 
 class TradeDetailScreen extends StatelessWidget {
@@ -23,7 +24,7 @@ class TradeDetailScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: isDark ? AppTheme.surfaceDark : AppTheme.surfaceLight,
       appBar: AppBar(
-        title: Text(
+        title: TranslatedText(
           'Trade Loop',
           style: GoogleFonts.outfit(fontWeight: FontWeight.w700),
         ),
@@ -56,7 +57,7 @@ class TradeDetailScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    Text(
+                    TranslatedText(
                       '${trade.participants.length}-Party Trade Loop',
                       style: GoogleFonts.outfit(
                         fontSize: 22,
@@ -76,7 +77,7 @@ class TradeDetailScreen extends StatelessWidget {
                         ).withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Text(
+                      child: TranslatedText(
                         trade.status.toUpperCase(),
                         style: GoogleFonts.inter(
                           fontSize: 12,
@@ -107,7 +108,7 @@ class TradeDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  TranslatedText(
                     'Trade Progress',
                     style: GoogleFonts.outfit(
                       fontSize: 18,
@@ -125,7 +126,7 @@ class TradeDetailScreen extends StatelessWidget {
             // Participants
             FadeInUp(
               delay: const Duration(milliseconds: 200),
-              child: Text(
+              child: TranslatedText(
                 'Participants',
                 style: GoogleFonts.outfit(
                   fontSize: 18,
@@ -184,7 +185,7 @@ class TradeDetailScreen extends StatelessWidget {
                               shape: BoxShape.circle,
                             ),
                             child: Center(
-                              child: Text(
+                              child: TranslatedText(
                                 p.farmerName[0],
                                 style: GoogleFonts.outfit(
                                   fontSize: 18,
@@ -201,7 +202,7 @@ class TradeDetailScreen extends StatelessWidget {
                               children: [
                                 Row(
                                   children: [
-                                    Text(
+                                    TranslatedText(
                                       p.farmerName,
                                       style: GoogleFonts.outfit(
                                         fontSize: 15,
@@ -222,7 +223,7 @@ class TradeDetailScreen extends StatelessWidget {
                                             6,
                                           ),
                                         ),
-                                        child: Text(
+                                        child: TranslatedText(
                                           'YOU',
                                           style: GoogleFonts.inter(
                                             fontSize: 9,
@@ -234,7 +235,7 @@ class TradeDetailScreen extends StatelessWidget {
                                     ],
                                   ],
                                 ),
-                                Text(
+                                TranslatedText(
                                   '₹${p.valuationAmount.toStringAsFixed(0)} value',
                                   style: GoogleFonts.inter(
                                     fontSize: 12,
@@ -288,7 +289,7 @@ class TradeDetailScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    TranslatedText(
                       'Credit Settlements',
                       style: GoogleFonts.outfit(
                         fontSize: 18,
@@ -324,7 +325,7 @@ class TradeDetailScreen extends StatelessWidget {
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child: Text(
+                              child: TranslatedText(
                                 cm.description,
                                 style: GoogleFonts.inter(
                                   fontSize: 12,
@@ -334,7 +335,7 @@ class TradeDetailScreen extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            Text(
+                            TranslatedText(
                               '₹${cm.amount.toStringAsFixed(0)}',
                               style: GoogleFonts.outfit(
                                 fontSize: 14,
@@ -369,14 +370,14 @@ class TradeDetailScreen extends StatelessWidget {
                           );
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Trade confirmed! ✅'),
+                              content: TranslatedText('Trade confirmed! ✅'),
                               backgroundColor: AppTheme.successGreen,
                             ),
                           );
                           Navigator.pop(context);
                         },
                         icon: const Icon(Icons.check_circle_outline),
-                        label: Text(
+                        label: TranslatedText(
                           'Confirm Trade',
                           style: GoogleFonts.outfit(
                             fontSize: 17,
@@ -405,7 +406,7 @@ class TradeDetailScreen extends StatelessWidget {
                           Navigator.pop(context);
                         },
                         icon: const Icon(Icons.cancel_outlined),
-                        label: Text(
+                        label: TranslatedText(
                           'Decline',
                           style: GoogleFonts.outfit(
                             fontSize: 15,
@@ -426,7 +427,9 @@ class TradeDetailScreen extends StatelessWidget {
               ),
             ],
 
-            if (trade.status == 'confirmed' || trade.status == 'executing' || trade.status == 'disputed') ...[
+            if (trade.status == 'confirmed' ||
+                trade.status == 'executing' ||
+                trade.status == 'disputed') ...[
               FadeInUp(
                 delay: const Duration(milliseconds: 600),
                 child: Builder(
@@ -449,17 +452,25 @@ class TradeDetailScreen extends StatelessWidget {
 
                     // My evidence
                     final sendEvidence = appState.getMyEvidence(
-                      trade.loopId, currentUserId ?? '', 'sending',
+                      trade.loopId,
+                      currentUserId ?? '',
+                      'sending',
                     );
                     final recvEvidence = appState.getMyEvidence(
-                      trade.loopId, currentUserId ?? '', 'receiving',
+                      trade.loopId,
+                      currentUserId ?? '',
+                      'receiving',
                     );
 
                     // All evidence
-                    final allEvidence = appState.getEvidenceForTrade(trade.loopId);
-                    final allSending = allEvidence.where((e) => e.role == 'sending').toList();
-                    final bothSentUploaded = allSending.length >= trade.participants.length;
-                    final allDone = allEvidence.length >= trade.participants.length * 2;
+                    final allEvidence =
+                        appState.getEvidenceForTrade(trade.loopId);
+                    final allSending =
+                        allEvidence.where((e) => e.role == 'sending').toList();
+                    final bothSentUploaded =
+                        allSending.length >= trade.participants.length;
+                    final allDone =
+                        allEvidence.length >= trade.participants.length * 2;
 
                     return Column(
                       children: [
@@ -470,27 +481,38 @@ class TradeDetailScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: AppTheme.skyBlue.withValues(alpha: 0.3)),
+                            border: Border.all(
+                                color: AppTheme.skyBlue.withValues(alpha: 0.3)),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(children: [
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 3),
                                   decoration: BoxDecoration(
-                                    color: AppTheme.skyBlue.withValues(alpha: 0.15),
-                                    borderRadius: BorderRadius.circular(8)),
-                                  child: Text('STEP 1', style: GoogleFonts.outfit(
-                                    fontSize: 11, fontWeight: FontWeight.w700, color: AppTheme.skyBlue)),
+                                      color: AppTheme.skyBlue
+                                          .withValues(alpha: 0.15),
+                                      borderRadius: BorderRadius.circular(8)),
+                                  child: Text('STEP 1',
+                                      style: GoogleFonts.outfit(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w700,
+                                          color: AppTheme.skyBlue)),
                                 ),
                                 const SizedBox(width: 8),
-                                Text('Upload Sending Photo', style: GoogleFonts.outfit(
-                                  fontSize: 14, fontWeight: FontWeight.w700)),
+                                Text('Upload Sending Photo',
+                                    style: GoogleFonts.outfit(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700)),
                               ]),
                               const SizedBox(height: 6),
-                              Text('Take a photo of $mySendingProduct before you hand it over',
-                                style: GoogleFonts.inter(fontSize: 12, color: Colors.grey.shade600)),
+                              Text(
+                                  'Take a photo of $mySendingProduct before you hand it over',
+                                  style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade600)),
                               const SizedBox(height: 10),
                               _evidenceSection(
                                 ctx: ctx,
@@ -499,32 +521,40 @@ class TradeDetailScreen extends StatelessWidget {
                                 evidence: sendEvidence,
                                 buttonColor: AppTheme.skyBlue,
                                 onUpload: () => _uploadPhoto(
-                                  ctx, trade.loopId, currentUserId ?? '',
-                                  'sending', mySendingProduct, appState,
+                                  ctx,
+                                  trade.loopId,
+                                  currentUserId ?? '',
+                                  'sending',
+                                  mySendingProduct,
+                                  appState,
                                 ),
                               ),
-                              if (!bothSentUploaded && sendEvidence != null) ...[
+                              if (!bothSentUploaded &&
+                                  sendEvidence != null) ...[
                                 const SizedBox(height: 8),
                                 Row(children: [
                                   const Icon(Icons.hourglass_top_rounded,
-                                    color: AppTheme.accentAmber, size: 16),
+                                      color: AppTheme.accentAmber, size: 16),
                                   const SizedBox(width: 6),
-                                  Text('Waiting for other farmer to upload their sending photo...',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 11, color: AppTheme.accentAmber,
-                                      fontWeight: FontWeight.w500)),
+                                  Text(
+                                      'Waiting for other farmer to upload their sending photo...',
+                                      style: GoogleFonts.inter(
+                                          fontSize: 11,
+                                          color: AppTheme.accentAmber,
+                                          fontWeight: FontWeight.w500)),
                                 ]),
                               ],
                               if (bothSentUploaded) ...[
                                 const SizedBox(height: 8),
                                 Row(children: [
                                   const Icon(Icons.check_circle_rounded,
-                                    color: AppTheme.successGreen, size: 16),
+                                      color: AppTheme.successGreen, size: 16),
                                   const SizedBox(width: 6),
                                   Text('Both sending photos uploaded ✅',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 11, color: AppTheme.successGreen,
-                                      fontWeight: FontWeight.w500)),
+                                      style: GoogleFonts.inter(
+                                          fontSize: 11,
+                                          color: AppTheme.successGreen,
+                                          fontWeight: FontWeight.w500)),
                                 ]),
                               ],
                             ],
@@ -538,62 +568,87 @@ class TradeDetailScreen extends StatelessWidget {
                           width: double.infinity,
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
-                            color: bothSentUploaded ? Colors.white : Colors.grey.shade100,
+                            color: bothSentUploaded
+                                ? Colors.white
+                                : Colors.grey.shade100,
                             borderRadius: BorderRadius.circular(14),
                             border: Border.all(
-                              color: bothSentUploaded
-                                  ? AppTheme.accentAmber.withValues(alpha: 0.3)
-                                  : Colors.grey.shade300),
+                                color: bothSentUploaded
+                                    ? AppTheme.accentAmber
+                                        .withValues(alpha: 0.3)
+                                    : Colors.grey.shade300),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(children: [
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 3),
                                   decoration: BoxDecoration(
-                                    color: bothSentUploaded
-                                        ? AppTheme.accentAmber.withValues(alpha: 0.15)
-                                        : Colors.grey.shade200,
-                                    borderRadius: BorderRadius.circular(8)),
-                                  child: Text('STEP 2', style: GoogleFonts.outfit(
-                                    fontSize: 11, fontWeight: FontWeight.w700,
-                                    color: bothSentUploaded ? AppTheme.accentAmber : Colors.grey)),
+                                      color: bothSentUploaded
+                                          ? AppTheme.accentAmber
+                                              .withValues(alpha: 0.15)
+                                          : Colors.grey.shade200,
+                                      borderRadius: BorderRadius.circular(8)),
+                                  child: TranslatedText('STEP 2',
+                                      style: GoogleFonts.outfit(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w700,
+                                          color: bothSentUploaded
+                                              ? AppTheme.accentAmber
+                                              : Colors.grey)),
                                 ),
                                 const SizedBox(width: 8),
-                                Text('Upload Receiving Photo', style: GoogleFonts.outfit(
-                                  fontSize: 14, fontWeight: FontWeight.w700,
-                                  color: bothSentUploaded ? null : Colors.grey)),
+                                Text('Upload Receiving Photo',
+                                    style: GoogleFonts.outfit(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w700,
+                                        color: bothSentUploaded
+                                            ? null
+                                            : Colors.grey)),
                               ]),
                               const SizedBox(height: 6),
                               if (!bothSentUploaded)
-                                Text('🔒 Unlocks after both farmers upload their sending photos',
-                                  style: GoogleFonts.inter(fontSize: 12, color: Colors.grey))
+                                Text(
+                                    '🔒 Unlocks after both farmers upload their sending photos',
+                                    style: GoogleFonts.inter(
+                                        fontSize: 12, color: Colors.grey))
                               else ...[
-                                Text('Take a photo of $myReceivingProduct that you received',
-                                  style: GoogleFonts.inter(fontSize: 12, color: Colors.grey.shade600)),
+                                TranslatedText(
+                                    'Take a photo of $myReceivingProduct that you received',
+                                    style: GoogleFonts.inter(
+                                        fontSize: 12,
+                                        color: Colors.grey.shade600)),
                                 const SizedBox(height: 10),
                                 _evidenceSection(
                                   ctx: ctx,
                                   title: '📥 Receiving: $myReceivingProduct',
-                                  subtitle: 'Product you received from other farmer',
+                                  subtitle:
+                                      'Product you received from other farmer',
                                   evidence: recvEvidence,
                                   buttonColor: AppTheme.accentAmber,
                                   onUpload: () => _uploadPhoto(
-                                    ctx, trade.loopId, currentUserId ?? '',
-                                    'receiving', myReceivingProduct, appState,
+                                    ctx,
+                                    trade.loopId,
+                                    currentUserId ?? '',
+                                    'receiving',
+                                    myReceivingProduct,
+                                    appState,
                                   ),
                                 ),
                                 if (!allDone && recvEvidence != null) ...[
                                   const SizedBox(height: 8),
                                   Row(children: [
                                     const Icon(Icons.hourglass_top_rounded,
-                                      color: AppTheme.accentAmber, size: 16),
+                                        color: AppTheme.accentAmber, size: 16),
                                     const SizedBox(width: 6),
-                                    Text('Waiting for other farmer to upload receiving photo...',
-                                      style: GoogleFonts.inter(
-                                        fontSize: 11, color: AppTheme.accentAmber,
-                                        fontWeight: FontWeight.w500)),
+                                    Text(
+                                        'Waiting for other farmer to upload receiving photo...',
+                                        style: GoogleFonts.inter(
+                                            fontSize: 11,
+                                            color: AppTheme.accentAmber,
+                                            fontWeight: FontWeight.w500)),
                                   ]),
                                 ],
                               ],
@@ -610,39 +665,94 @@ class TradeDetailScreen extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: trade.status == 'disputed'
                                   ? AppTheme.errorRed.withValues(alpha: 0.08)
-                                  : AppTheme.successGreen.withValues(alpha: 0.08),
+                                  : AppTheme.successGreen
+                                      .withValues(alpha: 0.08),
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(
-                                color: trade.status == 'disputed'
-                                    ? AppTheme.errorRed.withValues(alpha: 0.3)
-                                    : AppTheme.successGreen.withValues(alpha: 0.3)),
+                                  color: trade.status == 'disputed'
+                                      ? AppTheme.errorRed.withValues(alpha: 0.3)
+                                      : AppTheme.successGreen
+                                          .withValues(alpha: 0.3)),
                             ),
                             child: Column(
                               children: [
-                                Row(children: [
-                                  Icon(
-                                    trade.status == 'disputed'
-                                        ? Icons.warning_rounded
-                                        : Icons.verified_rounded,
-                                    color: trade.status == 'disputed'
-                                        ? AppTheme.errorRed
-                                        : AppTheme.successGreen,
-                                    size: 24),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      trade.status == 'disputed'
-                                          ? 'Mismatch detected! Dispute filed automatically.'
-                                          : 'AI verification passed! Photos match.',
-                                      style: GoogleFonts.outfit(
-                                        fontSize: 14, fontWeight: FontWeight.w700,
+                                Row(
+                                  children: [
+                                    Icon(
+                                        trade.status == 'disputed'
+                                            ? Icons.warning_rounded
+                                            : Icons.verified_rounded,
                                         color: trade.status == 'disputed'
                                             ? AppTheme.errorRed
-                                            : AppTheme.successGreen),
+                                            : AppTheme.successGreen,
+                                        size: 24),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: TranslatedText(
+                                        trade.status == 'disputed'
+                                            ? 'Mismatch detected! Dispute filed automatically.'
+                                            : 'AI verification passed! Photos match.',
+                                        style: GoogleFonts.outfit(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w700,
+                                            color: trade.status == 'disputed'
+                                                ? AppTheme.errorRed
+                                                : AppTheme.successGreen),
+                                      ),
                                     ),
-                                  ),
-                                ]),
-                                if (trade.status != 'disputed' && trade.status != 'completed') ...[
+                                    const Spacer(),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: _conditionColor(
+                                                sendEvidence!.conditionTag)
+                                            .withValues(alpha: 0.15),
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: TranslatedText(
+                                        sendEvidence.conditionTag,
+                                        style: GoogleFonts.inter(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                          color: _conditionColor(
+                                              sendEvidence.conditionTag),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 14),
+                                // Overall Score
+                                Row(
+                                  children: [
+                                    TranslatedText('Overall Score: ',
+                                        style: GoogleFonts.inter(fontSize: 13)),
+                                    TranslatedText(
+                                      '${sendEvidence.aiQualityScore.toStringAsFixed(0)}%',
+                                      style: GoogleFonts.outfit(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppTheme.primaryGreen,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                // Score bars
+                                _scoreBar(
+                                    'Freshness', sendEvidence.freshnessScore),
+                                const SizedBox(height: 6),
+                                _scoreBar(
+                                    'Damage Check', sendEvidence.damageScore),
+                                const SizedBox(height: 6),
+                                _scoreBar(
+                                    'Color Quality', sendEvidence.colorScore),
+                                const SizedBox(height: 6),
+                                _scoreBar(
+                                    'Size Consistency', sendEvidence.sizeScore),
+                                if (trade.status != 'disputed' &&
+                                    trade.status != 'completed') ...[
                                   const SizedBox(height: 12),
                                   SizedBox(
                                     width: double.infinity,
@@ -651,24 +761,31 @@ class TradeDetailScreen extends StatelessWidget {
                                       onPressed: () {
                                         appState.completeTrade(trade.loopId);
                                         if (context.mounted) {
-                                          ScaffoldMessenger.of(context).showSnackBar(
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
                                             SnackBar(
-                                              content: Text('Trade completed! 🎉',
-                                                style: GoogleFonts.inter()),
-                                              backgroundColor: AppTheme.successGreen),
+                                                content: const TranslatedText(
+                                                    'Trade completed! 🎉',
+                                                    style: TextStyle()),
+                                                backgroundColor:
+                                                    AppTheme.successGreen),
                                           );
                                           Navigator.pop(context);
                                         }
                                       },
-                                      icon: const Icon(Icons.check_circle_rounded),
-                                      label: Text('Complete Trade',
-                                        style: GoogleFonts.outfit(
-                                          fontSize: 16, fontWeight: FontWeight.w700)),
+                                      icon: const Icon(
+                                          Icons.check_circle_rounded),
+                                      label: TranslatedText('Complete Trade',
+                                          style: GoogleFonts.outfit(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w700)),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: AppTheme.successGreen,
-                                        foregroundColor: Colors.white,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(14))),
+                                          backgroundColor:
+                                              AppTheme.successGreen,
+                                          foregroundColor: Colors.white,
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(14))),
                                     ),
                                   ),
                                 ],
@@ -676,6 +793,51 @@ class TradeDetailScreen extends StatelessWidget {
                             ),
                           ),
                         ],
+
+                        // Upload status
+                        const SizedBox(height: 14),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: (sendEvidence != null && bothSentUploaded)
+                                ? AppTheme.successGreen.withValues(alpha: 0.08)
+                                : AppTheme.accentAmber.withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                (sendEvidence != null && bothSentUploaded)
+                                    ? Icons.check_circle_rounded
+                                    : Icons.hourglass_top_rounded,
+                                color:
+                                    (sendEvidence != null && bothSentUploaded)
+                                        ? AppTheme.successGreen
+                                        : AppTheme.accentAmber,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: TranslatedText(
+                                  sendEvidence == null
+                                      ? 'Upload your evidence to proceed'
+                                      : bothSentUploaded
+                                          ? 'Both parties uploaded. AI comparison complete!'
+                                          : 'Waiting for other party to upload evidence...',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    color: (sendEvidence != null &&
+                                            bothSentUploaded)
+                                        ? AppTheme.successGreen
+                                        : AppTheme.accentAmber,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
 
                         if (trade.status == 'disputed') ...[
                           const SizedBox(height: 12),
@@ -686,14 +848,18 @@ class TradeDetailScreen extends StatelessWidget {
                               onPressed: () =>
                                   Navigator.pushNamed(context, '/disputes'),
                               icon: const Icon(Icons.gavel_rounded),
-                              label: Text('View Disputes',
-                                style: GoogleFonts.outfit(
-                                  fontSize: 15, fontWeight: FontWeight.w600)),
+                              label: TranslatedText('View Disputes',
+                                  style: GoogleFonts.outfit(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600)),
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: AppTheme.errorRed,
-                                side: const BorderSide(color: AppTheme.errorRed),
+                                side:
+                                    const BorderSide(color: AppTheme.errorRed),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14))),
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                              ),
                             ),
                           ),
                         ],
@@ -729,7 +895,7 @@ class TradeDetailScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            TranslatedText(
                               'Trade Completed!',
                               style: GoogleFonts.outfit(
                                 fontSize: 16,
@@ -737,7 +903,7 @@ class TradeDetailScreen extends StatelessWidget {
                                 color: AppTheme.successGreen,
                               ),
                             ),
-                            Text(
+                            TranslatedText(
                               'Credits have been settled for all participants',
                               style: GoogleFonts.inter(
                                 fontSize: 12,
@@ -817,13 +983,14 @@ class TradeDetailScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: GoogleFonts.outfit(
-          fontSize: 14, fontWeight: FontWeight.w700)),
+        Text(title,
+            style:
+                GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w700)),
         const SizedBox(height: 4),
-        Text(subtitle, style: GoogleFonts.inter(
-          fontSize: 12, color: Colors.grey.shade500)),
+        Text(subtitle,
+            style:
+                GoogleFonts.inter(fontSize: 12, color: Colors.grey.shade500)),
         const SizedBox(height: 8),
-
         if (evidence == null)
           SizedBox(
             width: double.infinity,
@@ -832,13 +999,13 @@ class TradeDetailScreen extends StatelessWidget {
               onPressed: onUpload,
               icon: const Icon(Icons.camera_alt_rounded, size: 18),
               label: Text('Upload Photo',
-                style: GoogleFonts.outfit(
-                  fontSize: 14, fontWeight: FontWeight.w600)),
+                  style: GoogleFonts.outfit(
+                      fontSize: 14, fontWeight: FontWeight.w600)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: buttonColor,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(12)),
               ),
             ),
           )
@@ -850,12 +1017,12 @@ class TradeDetailScreen extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
-                color: AppTheme.primaryGreen.withValues(alpha: 0.2)),
+                  color: AppTheme.primaryGreen.withValues(alpha: 0.2)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
-                  blurRadius: 6,
-                  offset: const Offset(0, 2)),
+                    color: Colors.black.withValues(alpha: 0.03),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2)),
               ],
             ),
             child: Column(
@@ -867,20 +1034,21 @@ class TradeDetailScreen extends StatelessWidget {
                         color: AppTheme.primaryGreen, size: 18),
                     const SizedBox(width: 6),
                     Text('AI Report',
-                      style: GoogleFonts.outfit(
-                        fontSize: 13, fontWeight: FontWeight.w700)),
+                        style: GoogleFonts.outfit(
+                            fontSize: 13, fontWeight: FontWeight.w700)),
                     const Spacer(),
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: _conditionColor(evidence.conditionTag)
-                            .withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(8)),
+                          color: _conditionColor(evidence.conditionTag)
+                              .withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(8)),
                       child: Text(evidence.conditionTag,
-                        style: GoogleFonts.inter(
-                          fontSize: 11, fontWeight: FontWeight.w600,
-                          color: _conditionColor(evidence.conditionTag))),
+                          style: GoogleFonts.inter(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: _conditionColor(evidence.conditionTag))),
                     ),
                   ],
                 ),
@@ -888,9 +1056,10 @@ class TradeDetailScreen extends StatelessWidget {
                 Row(children: [
                   Text('Score: ', style: GoogleFonts.inter(fontSize: 12)),
                   Text('${evidence.aiQualityScore.toStringAsFixed(0)}%',
-                    style: GoogleFonts.outfit(
-                      fontSize: 16, fontWeight: FontWeight.bold,
-                      color: AppTheme.primaryGreen)),
+                      style: GoogleFonts.outfit(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.primaryGreen)),
                 ]),
                 const SizedBox(height: 8),
                 _scoreBar('Freshness', evidence.freshnessScore),
@@ -917,7 +1086,7 @@ class TradeDetailScreen extends StatelessWidget {
       children: [
         SizedBox(
           width: 110,
-          child: Text(
+          child: TranslatedText(
             label,
             style: GoogleFonts.inter(fontSize: 12, color: Colors.grey.shade600),
           ),
@@ -934,7 +1103,7 @@ class TradeDetailScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        Text(
+        TranslatedText(
           '${score.toStringAsFixed(0)}%',
           style: GoogleFonts.inter(
             fontSize: 12,
@@ -1005,8 +1174,8 @@ class TradeDetailScreen extends StatelessWidget {
                       color: isActive
                           ? AppTheme.primaryGreen.withValues(alpha: 0.15)
                           : (isDark
-                                ? Colors.grey.shade800
-                                : Colors.grey.shade100),
+                              ? Colors.grey.shade800
+                              : Colors.grey.shade100),
                       shape: BoxShape.circle,
                       border: isCurrent
                           ? Border.all(color: AppTheme.primaryGreen, width: 2)
@@ -1016,18 +1185,17 @@ class TradeDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 14),
                   Expanded(
-                    child: Text(
+                    child: TranslatedText(
                       step.$1,
                       style: GoogleFonts.outfit(
                         fontSize: 14,
-                        fontWeight: isCurrent
-                            ? FontWeight.w700
-                            : FontWeight.w500,
+                        fontWeight:
+                            isCurrent ? FontWeight.w700 : FontWeight.w500,
                         color: isActive
                             ? (isDark ? Colors.white : Colors.black)
                             : (isDark
-                                  ? Colors.grey.shade600
-                                  : Colors.grey.shade400),
+                                ? Colors.grey.shade600
+                                : Colors.grey.shade400),
                       ),
                     ),
                   ),
@@ -1047,7 +1215,7 @@ class TradeDetailScreen extends StatelessWidget {
                         color: AppTheme.primaryGreen,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Text(
+                      child: TranslatedText(
                         'CURRENT',
                         style: GoogleFonts.inter(
                           fontSize: 9,
@@ -1079,15 +1247,15 @@ class TradeDetailScreen extends StatelessWidget {
     final icon = status == 'confirmed'
         ? Icons.check_circle_rounded
         : status == 'declined'
-        ? Icons.cancel_rounded
-        : Icons.pending_rounded;
+            ? Icons.cancel_rounded
+            : Icons.pending_rounded;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, color: color, size: 18),
         const SizedBox(width: 4),
-        Text(
+        TranslatedText(
           status.toUpperCase(),
           style: GoogleFonts.inter(
             fontSize: 10,
@@ -1110,10 +1278,10 @@ class TradeDetailScreen extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 14)),
+            TranslatedText(emoji, style: const TextStyle(fontSize: 14)),
             const SizedBox(width: 4),
             Flexible(
-              child: Text(
+              child: TranslatedText(
                 label,
                 style: GoogleFonts.inter(
                   fontSize: 11,
@@ -1237,9 +1405,8 @@ class _EnhancedLoopPainter extends CustomPainter {
 
       // Node circle
       final nodePaint = Paint()
-        ..color = isConfirmed
-            ? Colors.white
-            : Colors.white.withValues(alpha: 0.7)
+        ..color =
+            isConfirmed ? Colors.white : Colors.white.withValues(alpha: 0.7)
         ..style = PaintingStyle.fill;
       canvas.drawCircle(pos, 18, nodePaint);
 

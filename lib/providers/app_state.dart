@@ -18,6 +18,7 @@ import '../services/mandi_price_service.dart';
 import '../services/quality_analysis_service.dart';
 import '../services/image_comparison_service.dart';
 import '../services/notification_service.dart';
+import '../services/translation_service.dart';
 import 'package:geolocator/geolocator.dart';
 
 /// Central application state using ChangeNotifier (Provider pattern).
@@ -44,6 +45,8 @@ class AppState extends ChangeNotifier {
 
   // Locale for multi-language
   Locale _locale = const Locale('en', 'IN');
+  String _currentLanguage = 'en-IN';
+  final _translationService = TranslationService();
 
   // Theme
   bool _isDarkMode = false;
@@ -60,6 +63,7 @@ class AppState extends ChangeNotifier {
   String? get verificationId => _verificationId;
   int get currentTabIndex => _currentTabIndex;
   Locale get locale => _locale;
+  String get currentLanguage => _currentLanguage;
   final _notifications = NotificationService.instance;
   bool get isDarkMode => _isDarkMode;
   String? get authError => _authError;
@@ -340,7 +344,12 @@ class AppState extends ChangeNotifier {
 
   Future<void> checkAuthState() async {
     final prefs = await SharedPreferences.getInstance();
+
+    // Initialize Translation Cache & Settings
+    await _translationService.init();
+    _currentLanguage = prefs.getString('app_language') ?? 'en-IN';
     _isDarkMode = prefs.getBool('isDarkMode') ?? false;
+
     final userId = prefs.getString('userId');
     if (userId != null) {
       // Try to load user from Firestore
@@ -395,12 +404,24 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Toggle between English and Hindi.
-  void toggleLocale() {
-    _locale = _locale.languageCode == 'en'
-        ? const Locale('hi', 'IN')
-        : const Locale('en', 'IN');
+  // â”€â”€â”€ MULTI-LANGUAGE (Sarvam AI) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+  /// Change the app's language and save preference
+  Future<void> setLanguage(String langCode) async {
+    if (_currentLanguage == langCode) return;
+    _currentLanguage = langCode;
+    // Notify all listeners to trigger a rebuild and re-translate the UI
     notifyListeners();
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('app_language', langCode);
+  }
+
+  /// Translate a string based on the current active language.
+  /// If language is 'en-IN', returns immediately.
+  Future<String> tr(String text) async {
+    if (_currentLanguage == 'en-IN' || text.isEmpty) return text;
+    return await _translationService.translate(text, _currentLanguage);
   }
 
   /// Calculate distance in km between current user and a listing.
@@ -1077,8 +1098,10 @@ class AppState extends ChangeNotifier {
           amount: amount,
           type: 'credit',
           tradeId: loopId,
-          description: 'Received ${giver.offerProduct} from ${giver.farmerName}',
-          balanceAfter: receiverIdx != -1 ? _users[receiverIdx].creditBalance : 0,
+          description:
+              'Received ${giver.offerProduct} from ${giver.farmerName}',
+          balanceAfter:
+              receiverIdx != -1 ? _users[receiverIdx].creditBalance : 0,
           timestamp: DateTime.now(),
         ),
       );
@@ -1310,30 +1333,41 @@ class AppState extends ChangeNotifier {
     bool anyMismatch = false;
     String mismatchDetails = '';
 
-    // For each participant, compare their SENDING photo with 
+    // For each participant, compare their SENDING photo with
     // the other party's RECEIVING photo (same product)
     for (final participant in trade.participants) {
-      final senderEvidence = evidenceList.where(
-        (e) => e.farmerId == participant.farmerId && e.role == 'sending',
-      ).toList();
+      final senderEvidence = evidenceList
+          .where(
+            (e) => e.farmerId == participant.farmerId && e.role == 'sending',
+          )
+          .toList();
 
       if (senderEvidence.isEmpty) continue;
       final senderReport = senderEvidence.first;
       final product = senderReport.productName;
 
       // Find the receiver's photo of this same product
-      final receiverEvidence = evidenceList.where(
-        (e) => e.farmerId != participant.farmerId && e.role == 'receiving' && e.productName == product,
-      ).toList();
+      final receiverEvidence = evidenceList
+          .where(
+            (e) =>
+                e.farmerId != participant.farmerId &&
+                e.role == 'receiving' &&
+                e.productName == product,
+          )
+          .toList();
 
       if (receiverEvidence.isEmpty) continue;
       final receiverReport = receiverEvidence.first;
 
       // Compare sender vs receiver scores for this product
-      final freshDiff = (senderReport.freshnessScore - receiverReport.freshnessScore).abs();
-      final damageDiff = (senderReport.damageScore - receiverReport.damageScore).abs();
-      final colorDiff = (senderReport.colorScore - receiverReport.colorScore).abs();
-      final sizeDiff = (senderReport.sizeScore - receiverReport.sizeScore).abs();
+      final freshDiff =
+          (senderReport.freshnessScore - receiverReport.freshnessScore).abs();
+      final damageDiff =
+          (senderReport.damageScore - receiverReport.damageScore).abs();
+      final colorDiff =
+          (senderReport.colorScore - receiverReport.colorScore).abs();
+      final sizeDiff =
+          (senderReport.sizeScore - receiverReport.sizeScore).abs();
       final avgDiff = (freshDiff + damageDiff + colorDiff + sizeDiff) / 4;
 
       if (avgDiff > 25) {
@@ -1370,7 +1404,8 @@ class AppState extends ChangeNotifier {
         _firestore.updateTrade(_trades[idx]);
       }
 
-      _notifications.notifyDisputeResolved('Quality mismatch detected — dispute filed automatically');
+      _notifications.notifyDisputeResolved(
+          'Quality mismatch detected — dispute filed automatically');
       notifyListeners();
     }
   }
