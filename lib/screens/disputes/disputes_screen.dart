@@ -121,17 +121,17 @@ class DisputesScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Dispute #${dispute.id.substring(0, 8)}',
+                      'Raised by: ${dispute.complainantName}',
                       style: GoogleFonts.outfit(
-                        fontSize: 15,
+                        fontSize: 14,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     Text(
-                      'Against ${dispute.respondentName}',
+                      'Against: ${dispute.respondentName}',
                       style: GoogleFonts.inter(
                         fontSize: 12,
-                        color: Colors.grey.shade500,
+                        color: Colors.grey.shade600,
                       ),
                     ),
                   ],
@@ -217,16 +217,17 @@ class DisputesScreen extends StatelessWidget {
               width: double.infinity,
               height: 40,
               child: ElevatedButton.icon(
-                onPressed: () {
+                onPressed: () async {
                   final appState = context.read<AppState>();
-                  appState.resolveDispute(dispute.id,
-                      'Resolved via AI Verdict: ${dispute.aiVerdict.replaceAll('_', ' ').toUpperCase()}');
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Dispute successfully resolved! ✨'),
-                      backgroundColor: AppTheme.successGreen,
-                    ),
-                  );
+                  await appState.resolveDispute(dispute.id, 'Resolved via AI Verdict: ${dispute.aiVerdict.replaceAll('_', ' ').toUpperCase()}');
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Dispute successfully resolved! ✨'),
+                        backgroundColor: AppTheme.successGreen,
+                      ),
+                    );
+                  }
                 },
                 icon: const Icon(Icons.check_circle_outline, size: 18),
                 label: Text(
@@ -383,7 +384,7 @@ class DisputesScreen extends StatelessWidget {
                   width: double.infinity,
                   height: 52,
                   child: ElevatedButton.icon(
-                    onPressed: () {
+                    onPressed: () async {
                       if (controller.text.trim().isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -401,22 +402,24 @@ class DisputesScreen extends StatelessWidget {
                           (p) => p.farmerId != appState.currentUser?.id,
                           orElse: () => trade.participants.first,
                         );
-
-                        appState.fileDispute(
+                        await appState.fileDispute(
                           tradeId: trade.loopId,
                           respondentId: respondent.farmerId,
                           respondentName: respondent.farmerName,
                           description: controller.text.trim(),
                         );
 
-                        Navigator.pop(formContext);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                                'Dispute SUBMITTED! AI has analyzed your request. 🤖'),
-                            backgroundColor: AppTheme.primaryGreen,
-                          ),
-                        );
+                        if (formContext.mounted) {
+                          Navigator.pop(formContext);
+                        }
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Dispute SUBMITTED! AI has analyzed your request. 🤖'),
+                              backgroundColor: AppTheme.primaryGreen,
+                            ),
+                          );
+                        }
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(

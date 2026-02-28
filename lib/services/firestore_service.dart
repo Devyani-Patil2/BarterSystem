@@ -337,12 +337,15 @@ class FirestoreService {
   /// Get all disputes (real-time stream)
   Stream<List<DisputeModel>> disputesStream() {
     return _disputesCol
-        .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snap) => snap.docs.map((doc) {
-              final d = doc.data() as Map<String, dynamic>;
-              return DisputeModel.fromMap(d);
-            }).toList());
+        .map((snap) {
+          final disputes = snap.docs.map((doc) {
+            final d = doc.data() as Map<String, dynamic>;
+            return DisputeModel.fromMap(d);
+          }).toList();
+          disputes.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          return disputes;
+        });
   }
 
   /// Update dispute

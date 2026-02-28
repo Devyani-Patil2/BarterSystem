@@ -513,6 +513,8 @@ class AppState extends ChangeNotifier {
     _disputesSubscription = _firestore.disputesStream().listen((disputes) {
       _disputes = disputes;
       notifyListeners();
+    }, onError: (e) {
+      debugPrint('Error in disputes stream: $e');
     });
   }
 
@@ -1529,14 +1531,14 @@ class AppState extends ChangeNotifier {
   }
 
   /// Legacy fallback without image bytes
-  DisputeModel fileDispute({
+  Future<DisputeModel> fileDispute({
     required String tradeId,
     required String respondentId,
     required String respondentName,
     required String description,
     String? complaintPhotoUrl,
     String? deliveryPhotoUrl,
-  }) {
+  }) async {
     // Text-based analysis when no image bytes available
     double similarity = 60.0;
     String verdict;
@@ -1604,17 +1606,17 @@ class AppState extends ChangeNotifier {
       _currentUser = _currentUser!.copyWith(
         disputeCount: _currentUser!.disputeCount + 1,
       );
-      _firestore.saveUser(_currentUser!);
+      await _firestore.saveUser(_currentUser!);
     }
 
     // Save to backend
-    _firestore.saveDispute(dispute);
+    await _firestore.saveDispute(dispute);
 
     notifyListeners();
     return dispute;
   }
 
-  void resolveDispute(String disputeId, String resolution) {
+  Future<void> resolveDispute(String disputeId, String resolution) async {
     final index = _disputes.indexWhere((d) => d.id == disputeId);
     if (index != -1) {
       _disputes[index] = DisputeModel(
@@ -1636,7 +1638,7 @@ class AppState extends ChangeNotifier {
       );
       
       // Save resolution to backend
-      _firestore.saveDispute(_disputes[index]);
+      await _firestore.saveDispute(_disputes[index]);
       
       notifyListeners();
     }
