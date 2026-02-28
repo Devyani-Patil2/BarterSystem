@@ -4,6 +4,8 @@ import 'package:animate_do/animate_do.dart';
 import 'package:provider/provider.dart';
 import '../../config/theme.dart';
 import '../../providers/app_state.dart';
+import '../../models/trade_model.dart';
+import '../../models/dispute_model.dart';
 
 class DisputesScreen extends StatelessWidget {
   const DisputesScreen({super.key});
@@ -346,7 +348,7 @@ class DisputesScreen extends StatelessWidget {
   }
 
   void _showDisputeForm(
-      BuildContext context, trade, TextEditingController controller) {
+      BuildContext context, TradeModel trade, TextEditingController controller) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
