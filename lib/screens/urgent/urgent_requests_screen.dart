@@ -613,42 +613,64 @@ class _UrgentRequestsScreenState extends State<UrgentRequestsScreen>
                           style: GoogleFonts.outfit(
                               fontSize: 14, fontWeight: FontWeight.w600)),
                       const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children:
-                            AppConstants.productCategories.map((product) {
+                      GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 3.2,
+                        ),
+                        itemCount: AppConstants.productCategories.length,
+                        itemBuilder: (context, index) {
+                          final product = AppConstants.productCategories[index];
                           final isSelected = selectedProduct == product;
+                          final emoji = AppConstants.productEmojis[product] ?? '📦';
+
                           return GestureDetector(
-                            onTap: () =>
-                                setModalState(() => selectedProduct = product),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 6),
+                            onTap: () => setModalState(() => selectedProduct = product),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              padding: const EdgeInsets.symmetric(horizontal: 8),
                               decoration: BoxDecoration(
-                                color: isSelected
-                                    ? AppTheme.errorRed
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(10),
+                                color: isSelected ? AppTheme.errorRed : Colors.white,
+                                borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: isSelected
-                                      ? AppTheme.errorRed
-                                      : Colors.grey.shade300,
+                                  color: isSelected ? AppTheme.errorRed : Colors.grey.shade300,
+                                  width: isSelected ? 2 : 1,
                                 ),
+                                boxShadow: isSelected
+                                    ? [
+                                        BoxShadow(
+                                          color: AppTheme.errorRed.withValues(alpha: 0.3),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ]
+                                    : null,
                               ),
-                              child: Text(
-                                '${AppConstants.productEmojis[product] ?? "📦"} $product',
-                                style: GoogleFonts.inter(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: isSelected
-                                      ? Colors.white
-                                      : Colors.grey.shade700,
-                                ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(emoji, style: const TextStyle(fontSize: 18)),
+                                  const SizedBox(width: 8),
+                                  Flexible(
+                                    child: Text(
+                                      product,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: GoogleFonts.inter(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                        color: isSelected ? Colors.white : Colors.grey.shade700,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           );
-                        }).toList(),
+                        },
                       ),
                       const SizedBox(height: 16),
 

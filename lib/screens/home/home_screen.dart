@@ -75,39 +75,62 @@ class HomeScreen extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            // Notification bell
-                            Container(
-                              width: 42,
-                              height: 42,
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.15),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Stack(
-                                children: [
-                                  const Center(
-                                    child: Icon(
-                                      Icons.notifications_outlined,
-                                      color: Colors.white,
-                                      size: 22,
-                                    ),
+                            // Theme Toggle
+                            GestureDetector(
+                              onTap: () => appState.toggleTheme(),
+                              child: Container(
+                                width: 42,
+                                height: 42,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.15),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Center(
+                                  child: Icon(
+                                    appState.isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                                    color: Colors.white,
+                                    size: 22,
                                   ),
-                                  if (appState.myTrades
-                                      .where((t) => t.status == 'pending')
-                                      .isNotEmpty)
-                                    Positioned(
-                                      right: 8,
-                                      top: 8,
-                                      child: Container(
-                                        width: 10,
-                                        height: 10,
-                                        decoration: const BoxDecoration(
-                                          color: AppTheme.accentAmber,
-                                          shape: BoxShape.circle,
-                                        ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            // Notification bell
+                            GestureDetector(
+                              onTap: () => Navigator.pushNamed(context, '/notifications'),
+                              child: Container(
+                                width: 42,
+                                height: 42,
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.15),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Stack(
+                                  children: [
+                                    const Center(
+                                      child: Icon(
+                                        Icons.notifications_outlined,
+                                        color: Colors.white,
+                                        size: 22,
                                       ),
                                     ),
-                                ],
+                                    if (appState.myTrades
+                                        .where((t) => t.status == 'pending')
+                                        .isNotEmpty)
+                                      Positioned(
+                                        right: 8,
+                                        top: 8,
+                                        child: Container(
+                                          width: 10,
+                                          height: 10,
+                                          decoration: const BoxDecoration(
+                                            color: AppTheme.accentAmber,
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
@@ -242,66 +265,78 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildQuickActions(BuildContext context) {
-    return Column(
-      children: [
-        Row(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final cardWidth = (constraints.maxWidth - 24) / 3;
+        
+        return Column(
           children: [
-            Expanded(
-              child: _quickActionCard(
-                context,
-                icon: Icons.add_circle_outline,
-                label: 'New\nListing',
-                color: AppTheme.primaryGreen,
-                onTap: () => Navigator.pushNamed(context, '/create-listing'),
-              ),
+            Row(
+              children: [
+                SizedBox(
+                  width: cardWidth,
+                  child: _quickActionCard(
+                    context,
+                    icon: Icons.add_circle_outline,
+                    label: 'New\nListing',
+                    color: AppTheme.primaryGreen,
+                    onTap: () => Navigator.pushNamed(context, '/create-listing'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                SizedBox(
+                  width: cardWidth,
+                  child: _quickActionCard(
+                    context,
+                    icon: Icons.swap_calls_rounded,
+                    label: 'My\nTrades',
+                    color: AppTheme.accentAmber,
+                    onTap: () => Navigator.pushNamed(context, '/trades'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                SizedBox(
+                  width: cardWidth,
+                  child: _quickActionCard(
+                    context,
+                    icon: Icons.account_balance_wallet_outlined,
+                    label: 'Credit\nWallet',
+                    color: AppTheme.skyBlue,
+                    onTap: () => Navigator.pushNamed(context, '/wallet'),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _quickActionCard(
-                context,
-                icon: Icons.swap_calls_rounded,
-                label: 'My\nTrades',
-                color: AppTheme.accentAmber,
-                onTap: () => Navigator.pushNamed(context, '/trades'),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _quickActionCard(
-                context,
-                icon: Icons.account_balance_wallet_outlined,
-                label: 'Credit\nWallet',
-                color: AppTheme.skyBlue,
-                onTap: () => Navigator.pushNamed(context, '/wallet'),
-              ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: cardWidth,
+                  child: _quickActionCard(
+                    context,
+                    icon: Icons.notification_important_rounded,
+                    label: 'Urgent\nNeed',
+                    color: AppTheme.errorRed,
+                    onTap: () => Navigator.pushNamed(context, '/urgent-requests'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                SizedBox(
+                  width: cardWidth,
+                  child: _quickActionCard(
+                    context,
+                    icon: Icons.shield_outlined,
+                    label: 'Dispute\nCenter',
+                    color: AppTheme.warningOrange,
+                    onTap: () => Navigator.pushNamed(context, '/disputes'),
+                  ),
+                ),
+              ],
             ),
           ],
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: _quickActionCard(
-                context,
-                icon: Icons.notification_important_rounded,
-                label: 'Urgent\nNeed',
-                color: AppTheme.errorRed,
-                onTap: () => Navigator.pushNamed(context, '/urgent-requests'),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _quickActionCard(
-                context,
-                icon: Icons.shield_outlined,
-                label: 'Dispute\nCenter',
-                color: AppTheme.warningOrange,
-                onTap: () => Navigator.pushNamed(context, '/disputes'),
-              ),
-            ),
-          ],
-        ),
-      ],
+        );
+      },
     );
   }
 

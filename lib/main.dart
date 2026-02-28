@@ -17,6 +17,7 @@ import 'screens/auth/login_screen.dart';
 import 'screens/auth/otp_screen.dart';
 import 'screens/auth/profile_setup_screen.dart';
 import 'screens/home/home_screen.dart';
+import 'screens/home/notifications_screen.dart';
 import 'screens/listings/listings_screen.dart';
 import 'screens/listings/create_listing_screen.dart';
 import 'screens/listings/listing_detail_screen.dart';
@@ -107,6 +108,8 @@ class AgroSwapApp extends StatelessWidget {
                   return _slideRoute(const PriceDiscoveryScreen());
                 case '/credit-history':
                   return _slideRoute(const CreditHistoryScreen());
+                case '/notifications':
+                  return _slideRoute(const NotificationsScreen());
                 default:
                   return _fadeRoute(const SplashScreen());
               }
