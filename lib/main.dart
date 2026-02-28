@@ -42,11 +42,11 @@ void main() async {
   );
   // Initialize notifications
   await NotificationService.instance.init();
-  runApp(const NanonMeshApp());
+  runApp(const AgroSwapApp());
 }
 
-class NanonMeshApp extends StatelessWidget {
-  const NanonMeshApp({super.key});
+class AgroSwapApp extends StatelessWidget {
+  const AgroSwapApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +55,7 @@ class NanonMeshApp extends StatelessWidget {
       child: Consumer<AppState>(
         builder: (context, appState, _) {
           return MaterialApp(
-            title: 'NanonMesh',
+            title: 'AgroSwap',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
