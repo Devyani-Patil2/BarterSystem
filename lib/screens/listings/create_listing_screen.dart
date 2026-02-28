@@ -333,17 +333,26 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         .where((p) => p != exclude)
         .toList();
 
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: products.map((product) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 3.2,
+      ),
+      itemCount: products.length,
+      itemBuilder: (context, index) {
+        final product = products[index];
         final isSelected = selected == product;
         final emoji = AppConstants.productEmojis[product] ?? '📦';
+        
         return GestureDetector(
           onTap: () => onSelect(product),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             decoration: BoxDecoration(
               color: isSelected ? AppTheme.primaryGreen : Colors.white,
               borderRadius: BorderRadius.circular(12),
@@ -362,23 +371,26 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
                   : null,
             ),
             child: Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(emoji, style: const TextStyle(fontSize: 16)),
-                const SizedBox(width: 6),
-                Text(
-                  product,
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: isSelected ? Colors.white : Colors.grey.shade700,
+                Text(emoji, style: const TextStyle(fontSize: 18)),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text(
+                    product,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: isSelected ? Colors.white : Colors.grey.shade700,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
         );
-      }).toList(),
+      },
     );
   }
 }

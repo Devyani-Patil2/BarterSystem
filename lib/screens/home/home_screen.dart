@@ -288,17 +288,6 @@ class HomeScreen extends StatelessWidget {
                 onTap: () => Navigator.pushNamed(context, '/urgent-requests'),
               ),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _quickActionCard(
-                context,
-                icon: Icons.camera_alt_rounded,
-                label: 'AI\nQuality',
-                color: AppTheme.primaryGreen,
-                onTap: () => Navigator.pushNamed(context, '/quality-check'),
-              ),
-            ),
-            const SizedBox(width: 12),
             Expanded(
               child: _quickActionCard(
                 context,
