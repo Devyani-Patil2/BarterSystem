@@ -3,6 +3,7 @@ import '../models/user_model.dart';
 import '../models/listing_model.dart';
 import '../models/trade_model.dart';
 import '../models/urgent_request_model.dart';
+import '../models/dispute_model.dart';
 
 /// Firestore service for cross-device data sharing.
 /// Auth stays local (PIN-based). Only data is synced via Firestore.
@@ -19,6 +20,7 @@ class FirestoreService {
   CollectionReference get _tradesCol => _firestore.collection('trades');
   CollectionReference get _urgentRequestsCol =>
       _firestore.collection('urgent_requests');
+  CollectionReference get _disputesCol => _firestore.collection('disputes');
 
   // ─── USERS ─────────────────────────────────────────────────
 
@@ -323,5 +325,28 @@ class FirestoreService {
         .where('tradeId', isEqualTo: tradeId)
         .get();
     return snap.docs.map((d) => d.data()).toList();
+  }
+
+  // ─── DISPUTES ──────────────────────────────────────────────
+
+  /// Save dispute
+  Future<void> saveDispute(DisputeModel dispute) async {
+    await _disputesCol.doc(dispute.id).set(dispute.toMap());
+  }
+
+  /// Get all disputes (real-time stream)
+  Stream<List<DisputeModel>> disputesStream() {
+    return _disputesCol
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snap) => snap.docs.map((doc) {
+              final d = doc.data() as Map<String, dynamic>;
+              return DisputeModel.fromMap(d);
+            }).toList());
+  }
+
+  /// Update dispute
+  Future<void> updateDispute(DisputeModel dispute) async {
+    await saveDispute(dispute);
   }
 }

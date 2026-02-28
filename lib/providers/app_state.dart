@@ -55,6 +55,7 @@ class AppState extends ChangeNotifier {
   StreamSubscription? _listingsSubscription;
   StreamSubscription? _tradesSubscription;
   StreamSubscription? _urgentRequestsSubscription;
+  StreamSubscription? _disputesSubscription;
 
   // Getters
   bool get isAuthenticated => _isAuthenticated;
@@ -486,6 +487,7 @@ class AppState extends ChangeNotifier {
     _listingsSubscription?.cancel();
     _tradesSubscription?.cancel();
     _urgentRequestsSubscription?.cancel();
+    _disputesSubscription?.cancel();
 
     // Listen to listings changes (cross-device)
     _listingsSubscription = _firestore.listingsStream().listen((listings) {
@@ -506,6 +508,12 @@ class AppState extends ChangeNotifier {
       _urgentRequests.addAll(requests);
       notifyListeners();
     });
+
+    // Listen to disputes changes
+    _disputesSubscription = _firestore.disputesStream().listen((disputes) {
+      _disputes = disputes;
+      notifyListeners();
+    });
   }
 
   @override
@@ -513,6 +521,7 @@ class AppState extends ChangeNotifier {
     _listingsSubscription?.cancel();
     _tradesSubscription?.cancel();
     _urgentRequestsSubscription?.cancel();
+    _disputesSubscription?.cancel();
     super.dispose();
   }
 
@@ -1588,7 +1597,9 @@ class AppState extends ChangeNotifier {
       _firestore.saveUser(_currentUser!);
     }
 
-    // Dispute stays in-memory
+    // Save to backend
+    _firestore.saveDispute(dispute);
+
     notifyListeners();
     return dispute;
   }
@@ -1613,7 +1624,10 @@ class AppState extends ChangeNotifier {
         refundAmount: _disputes[index].refundAmount,
         resolvedAt: DateTime.now(),
       );
-      // Dispute update stays in-memory
+      
+      // Save resolution to backend
+      _firestore.saveDispute(_disputes[index]);
+      
       notifyListeners();
     }
   }
