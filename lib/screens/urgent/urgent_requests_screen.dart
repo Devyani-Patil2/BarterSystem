@@ -821,10 +821,16 @@ class _UrgentRequestsScreenState extends State<UrgentRequestsScreen>
                         width: double.infinity,
                         height: 52,
                         child: ElevatedButton(
-                          onPressed: selectedProduct != null &&
-                                  qtyController.text.isNotEmpty &&
-                                  creditCost > 0
-                              ? () {
+                          onPressed: () {
+                                  if (selectedProduct == null || qtyController.text.isEmpty || creditCost <= 0) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Please select a product and enter the quantity first!'),
+                                        backgroundColor: AppTheme.warningOrange,
+                                      ),
+                                    );
+                                    return;
+                                  }
                                   final appState = context.read<AppState>();
                                   if ((appState.currentUser?.creditBalance ??
                                           0) <
@@ -854,8 +860,7 @@ class _UrgentRequestsScreenState extends State<UrgentRequestsScreen>
                                       backgroundColor: AppTheme.primaryGreen,
                                     ),
                                   );
-                                }
-                              : null,
+                                },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.errorRed,
                             foregroundColor: Colors.white,
