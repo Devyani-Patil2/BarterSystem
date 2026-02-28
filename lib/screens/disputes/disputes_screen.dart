@@ -248,7 +248,7 @@ class DisputesScreen extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) {
+      builder: (sheetContext) {
         return Container(
           padding: const EdgeInsets.all(24),
           decoration: const BoxDecoration(
@@ -314,13 +314,13 @@ class DisputesScreen extends StatelessWidget {
                     ),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                     onTap: () {
-                      Navigator.pop(context);
+                      Navigator.pop(sheetContext);
                       _showDisputeForm(context, trade, descriptionController);
                     },
                   );
                 }),
               ],
-              SizedBox(height: MediaQuery.of(context).viewInsets.bottom + 20),
+              SizedBox(height: MediaQuery.of(sheetContext).viewInsets.bottom + 20),
             ],
           ),
         );
@@ -333,9 +333,9 @@ class DisputesScreen extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) {
+      builder: (formContext) {
         return Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          padding: EdgeInsets.only(bottom: MediaQuery.of(formContext).viewInsets.bottom),
           child: Container(
             padding: const EdgeInsets.all(24),
             decoration: const BoxDecoration(
@@ -378,7 +378,7 @@ class DisputesScreen extends StatelessWidget {
                             ? 'Quality mismatch'
                             : controller.text,
                       );
-                      Navigator.pop(context);
+                      Navigator.pop(formContext);
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Dispute filed! AI is analyzing... 🤖'),
