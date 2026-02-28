@@ -204,6 +204,36 @@ class DisputesScreen extends StatelessWidget {
               ],
             ),
           ),
+          if (dispute.status != 'resolved') ...[
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              height: 40,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  final appState = context.read<AppState>();
+                  appState.resolveDispute(dispute.id, 'Resolved via AI Verdict: ${dispute.aiVerdict.replaceAll('_', ' ').toUpperCase()}');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Dispute successfully resolved! ✨'),
+                      backgroundColor: AppTheme.successGreen,
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.check_circle_outline, size: 18),
+                label: Text(
+                  'Accept Verdict & Resolve',
+                  style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w600),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryGreen,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  elevation: 0,
+                ),
+              ),
+            ),
+          ],
         ],
       ),
     );

@@ -1,8 +1,0 @@
-flask
-torch
-torchvision
-Pillow
-numpy
-scikit-learn
-scikit-image
-opencv-python
